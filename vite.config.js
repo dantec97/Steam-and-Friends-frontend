@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // '/api': 'http://127.0.0.1:5000', //  this line configures the proxy to redirect API calls to the Flask server
+      '/api': 'http://127.0.0.1:5000', //  this line configures the proxy to redirect API calls to the Flask server
     },
   },
 });
