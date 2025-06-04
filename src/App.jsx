@@ -7,6 +7,7 @@ import Friends from "./components/Friends";
 import FriendGames from "./components/FriendGames";
 import GameComparison from "./components/GameComparison";
 import Groups from "./components/Groups";
+import GroupDetails from "./components/GroupDetails";
 // import Groups from "./components/Groups";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/friends/:friendSteamId/games" element={<FriendGames />} />
         <Route path="/games/:gameId/comparison" element={<GameComparison />} />
         <Route path='/groups' element={<Groups />} />
+        <Route path='/groups/:groupId' element={<GroupDetails />} />
       </Routes>
     </Router>
   );
