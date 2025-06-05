@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 const DEFAULT_GROUP_PIC = "/Logo.jpeg"; // Or any placeholder image
+import { apiFetch } from "../utils/api";
 
 const GroupDetails = () => {
   const { groupId } = useParams();
@@ -25,13 +26,13 @@ const GroupDetails = () => {
 
   // Fetch group info, members, and user's friends
   useEffect(() => {
-    fetch(`/api/groups/${groupId}/members`)
+    apiFetch(`/api/groups/${groupId}/members`)
       .then(res => res.json())
       .then(data => {
         setMembers(data);
         setLoading(false);
       });
-    fetch(`/api/groups/${groupId}`)
+    apiFetch(`/api/groups/${groupId}`)
       .then(res => res.json())
       .then(data => {
         setGroup(data);
@@ -39,7 +40,7 @@ const GroupDetails = () => {
       });
     // Fetch user's friends
     if (steamId) {
-      fetch(`/api/users/${steamId}/friends_cached`)
+      apiFetch(`/api/users/${steamId}/friends_cached`)
         .then(res => res.json())
         .then(data => setFriends(data))
         .catch(() => setFriends([]));
@@ -50,7 +51,7 @@ const GroupDetails = () => {
     if (members.length === 0) return;
     setComparisonLoading(true);
     setComparisonError("");
-    fetch(`/api/groups/${groupId}/shared_games`)
+    apiFetch(`/api/groups/${groupId}/shared_games`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setComparisonGames(data);
@@ -105,7 +106,7 @@ const GroupDetails = () => {
     setSyncing(true);
     setSyncMsg("");
     const steamIds = members.map(m => m.steam_id);
-    const res = await fetch("/api/sync_group_games", {
+    const res = await apiFetch("/api/sync_group_games", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ steam_ids: steamIds }),
@@ -120,7 +121,7 @@ const GroupDetails = () => {
     e.preventDefault();
     setAddMsg("");
     if (!addSteamId) return;
-    const res = await fetch(`/api/groups/${groupId}/members`, {
+    const res = await apiFetch(`/api/groups/${groupId}/members`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ steam_ids: [addSteamId] }),
@@ -136,7 +137,7 @@ const GroupDetails = () => {
 
   const handleAddMemberDirect = async (steamIdToAdd) => {
     setAddMsg("");
-    const res = await fetch(`/api/groups/${groupId}/members`, {
+    const res = await apiFetch(`/api/groups/${groupId}/members`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ steam_ids: [steamIdToAdd] }),
@@ -154,7 +155,7 @@ const GroupDetails = () => {
   // Delete member by Steam ID (prevent owner from deleting themselves)
   const handleDeleteMember = async (steamIdToDelete) => {
     setDelMsg("");
-    const res = await fetch(`/api/groups/${groupId}/members/${steamIdToDelete}`, {
+    const res = await apiFetch(`/api/groups/${groupId}/members/${steamIdToDelete}`, {
       method: "DELETE",
     });
     const data = await res.json();
@@ -171,7 +172,7 @@ const GroupDetails = () => {
     setComparisonGames([]);
     try {
       // Only fetch from your DB, do NOT sync with Steam API here
-      const sharedRes = await fetch(`/api/groups/${groupId}/shared_games`);
+      const sharedRes = await apiFetch(`/api/groups/${groupId}/shared_games`);
       const sharedData = await sharedRes.json();
       if (sharedRes.ok && Array.isArray(sharedData)) {
         setComparisonGames(sharedData);

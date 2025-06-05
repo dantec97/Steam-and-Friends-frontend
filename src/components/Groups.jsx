@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../utils/api";
 const DEFAULT_GROUP_PIC = "/Logo.jpeg"; // Or any placeholder image
 
 const Groups = () => {
@@ -16,11 +17,11 @@ const Groups = () => {
   // Fetch all groups and owned groups
   useEffect(() => {
     if (!steamId) return;
-    fetch(`/api/users/${steamId}/groups`)
+    apiFetch(`/api/users/${steamId}/groups`)
       .then((res) => res.json())
       .then((data) => setGroups(data))
       .catch(() => setGroups([]));
-    fetch(`/api/users/${steamId}/groups_owned`)
+    apiFetch(`/api/users/${steamId}/groups_owned`)
       .then((res) => res.json())
       .then((data) => setOwnedGroups(data))
       .catch(() => setOwnedGroups([]));
@@ -29,7 +30,7 @@ const Groups = () => {
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     setMessage("");
-    const res = await fetch("/api/groups", {
+    const res = await apiFetch("/api/groups", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: groupName, owner_steam_id: steamId }),
@@ -47,7 +48,7 @@ const Groups = () => {
     setSyncing(true);
     setSyncMsg("");
     const ids = steamIds.split(",").map((id) => id.trim()).filter(Boolean);
-    const res = await fetch("/api/sync_group_games", {
+    const res = await apiFetch("/api/sync_group_games", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ steam_ids: ids }),

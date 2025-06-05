@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../utils/api";
 
 const MyGames = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [syncing, setSyncing] = useState(false);
-  const steamId = localStorage.getItem("steam_id"); // Make sure to store this at signup/login
+  const steamId = localStorage.getItem("steam_id");
   const navigate = useNavigate();
 
   const fetchGames = () => {
     setLoading(true);
-    fetch(`/api/users/${steamId}/games`)
+    apiFetch(`/api/users/${steamId}/games`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch games");
         return res.json();
       })
       .then((data) => {
-        setGames(data.games || data); // adjust if your backend returns {games: [...]}
+        setGames(data.games || data);
         setLoading(false);
       })
       .catch((err) => {
@@ -32,7 +33,7 @@ const MyGames = () => {
 
   const handleSync = () => {
     setSyncing(true);
-    fetch(`/api/users/${steamId}/fetch_games`, { method: "POST" })
+    apiFetch(`/api/users/${steamId}/fetch_games`, { method: "POST" })
       .then((res) => res.json())
       .then(() => {
         fetchGames();
@@ -60,10 +61,10 @@ const MyGames = () => {
         {games.map((game) => (
           <li key={game.appid}>
             <img
-                src={game.image_url}
-                alt={game.name}
-                style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
-              />
+              src={game.image_url}
+              alt={game.name}
+              style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
+            />
             <strong>{game.name}</strong> — {formatPlaytime(game.playtime_minutes)} played
             <button
               style={{ marginLeft: 8 }}

@@ -7,8 +7,9 @@ import Friends from "./components/Friends";
 import FriendGames from "./components/FriendGames";
 import GameComparison from "./components/GameComparison";
 import Groups from "./components/Groups";
-import GroupDetails from "./components/GroupDetails";
-// import Groups from "./components/Groups";
+import GroupDetails from "./components/GroupDetails";    
+import SteamAuthSuccess from "./components/SteamAuthSuccess";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -17,79 +18,59 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/my_games" element={<MyGames />} />
-        <Route path="/friends" element={<Friends />} />
-        <Route path="/friends/:friendSteamId/games" element={<FriendGames />} />
-        <Route path="/games/:gameId/comparison" element={<GameComparison />} />
-        <Route path='/groups' element={<Groups />} />
-        <Route path='/groups/:groupId' element={<GroupDetails />} />
+        <Route
+          path="/my_games"
+          element={
+            <ProtectedRoute>
+              <MyGames />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <Friends />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends/:friendSteamId/games"
+          element={
+            <ProtectedRoute>
+              <FriendGames />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/games/:gameId/comparison"
+          element={
+            <ProtectedRoute>
+              <GameComparison />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/groups"
+          element={
+            <ProtectedRoute>
+              <Groups />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/groups/:groupId"
+          element={
+            <ProtectedRoute>
+              <GroupDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/steam-auth-success" element={<SteamAuthSuccess />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
-
-
-
-
-
-
-
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.jsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
-
-// export default App
-
-// import { useEffect, useState } from 'react';
-
-// function App() {
-//   const [msg, setMsg] = useState('');
-
-//   useEffect(() => {
-//     fetch('/api/hello')
-//       .then((res) => res.json())
-//       .then((data) => setMsg(data.message));
-//   }, []);
-
-//   return (
-//     <div>
-//       <h1>{msg}</h1>
-//     </div>
-//   );
-// }
-
-// export default App;
 

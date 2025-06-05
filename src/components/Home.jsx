@@ -2,6 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
+  const handleLogout = () => {
+  localStorage.clear();
+  window.location.href = "/login";
+};
   const steamId = localStorage.getItem("steam_id") || "<your_steam_id>";
   return (
     <div style={{ maxWidth: 600, margin: "40px auto", padding: 24 }}>
@@ -25,6 +29,9 @@ const Home = () => {
       <p style={{ color: "#888", marginTop: 24 }}>
         This is a development placeholder. Update this page to become your dashboard!
       </p>
+      <button onClick={handleLogout}>
+        Logout
+      </button>
     </div>
   );
 };

@@ -47,6 +47,13 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <button
+        onClick={() => {
+          window.location.href = "http://127.0.0.1:5000/auth/steam";
+        }}
+      >
+        Sign in with Steam
+      </button>
     </div>
   );
 };

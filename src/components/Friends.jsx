@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../utils/api";
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
@@ -8,26 +9,26 @@ const Friends = () => {
   const steamId = localStorage.getItem("steam_id");
   const navigate = useNavigate();
 
- useEffect(() => {
-  if (!steamId) {
-    setError("No Steam ID found. Please log in.");
-    setLoading(false);
-    return;
-  }
-  fetch(`/api/users/${steamId}/friends_cached`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch friends");
-      return res.json();
-    })
-    .then((data) => {
-      setFriends(data.friends || data);
+  useEffect(() => {
+    if (!steamId) {
+      setError("No Steam ID found. Please log in.");
       setLoading(false);
-    })
-    .catch((err) => {
-      setError(err.message);
-      setLoading(false);
-    });
-}, [steamId]);
+      return;
+    }
+    apiFetch(`/api/users/${steamId}/friends_cached`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch friends");
+        return res.json();
+      })
+      .then((data) => {
+        setFriends(data.friends || data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [steamId]);
 
   if (loading) return <div>Loading friends...</div>;
   if (error) return <div style={{ color: "red" }}>{error}</div>;
