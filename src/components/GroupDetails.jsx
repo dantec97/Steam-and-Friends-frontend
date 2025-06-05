@@ -46,6 +46,23 @@ const GroupDetails = () => {
     }
   }, [groupId, addMsg, delMsg, steamId]);
 
+    useEffect(() => {
+    if (members.length === 0) return;
+    setComparisonLoading(true);
+    setComparisonError("");
+    fetch(`/api/groups/${groupId}/shared_games`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setComparisonGames(data);
+        else setComparisonError(data.error || "Failed to fetch common games.");
+        setComparisonLoading(false);
+      })
+      .catch(() => {
+        setComparisonError("Network error.");
+        setComparisonLoading(false);
+      });
+  }, [groupId, members]);
+
   // Update filteredFriends when friendSearch, friends, or members change
   useEffect(() => {
     if (!friendSearch) {
@@ -152,18 +169,8 @@ const GroupDetails = () => {
     setComparisonLoading(true);
     setComparisonError("");
     setComparisonGames([]);
-    const steamIds = members.map(m => m.steam_id);
-
     try {
-      // 1. Sync group games
-      const syncRes = await fetch("/api/sync_group_games", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ steam_ids: steamIds }),
-      });
-      await syncRes.json(); // ignore response, just ensure sync
-
-      // 2. Fetch common games for this group
+      // Only fetch from your DB, do NOT sync with Steam API here
       const sharedRes = await fetch(`/api/groups/${groupId}/shared_games`);
       const sharedData = await sharedRes.json();
       if (sharedRes.ok && Array.isArray(sharedData)) {
@@ -304,7 +311,7 @@ const GroupDetails = () => {
       </ul>
       <div style={{ marginTop: 30 }}>
         <button onClick={handleSyncGroup} disabled={syncing}>
-          {syncing ? "Syncing..." : "Sync Group Games"}
+          {syncing ? "Syncing..." : "Sync Group Games from Steam"}
         </button>
         {syncMsg && <div style={{ marginTop: 10 }}>{syncMsg}</div>}
       </div>
@@ -321,7 +328,16 @@ const GroupDetails = () => {
                 <li key={game.appid}>
                   <img src={game.image_url} alt={game.name} style={{ width: 32, marginRight: 8 }} />
                   <strong>{game.name}</strong>
-                  <div>Total Playtime: {Math.round(game.total_playtime / 60)} hrs</div>
+                  <div>
+                    <em>Total Playtime: {Math.round(game.total_playtime / 60)} hrs</em>
+                    <ul>
+                      {members.map(member => (
+                        <li key={member.steam_id} style={{ fontSize: "0.95em" }}>
+                          {member.display_name}: {Math.round((game.playtimes?.[member.steam_id] || 0) / 60)} hrs
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </li>
               ))}
             </ul>

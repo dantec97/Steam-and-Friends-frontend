@@ -19,6 +19,7 @@ const Login = () => {
     if (res.ok) {
       localStorage.setItem("token", data.access_token);
       localStorage.setItem("account_display_name", displayName);
+      localStorage.setItem("steam_id", data.steam_id); // Store steam_id for future requests
       navigate("/my_games");
     } else {
       setError(data.error || "Login failed");
