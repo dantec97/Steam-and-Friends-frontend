@@ -1,0 +1,148 @@
+.dashboard-root {
+  display: flex;
+  min-height: 100vh;
+  background: #181c24;
+  color: #e0e6f0;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
+.dashboard-main {
+  position: relative;
+  z-index: 1; /* Above the background */ 
+}
+
+.dashboard-sidebar {
+  width: 260px;
+  background: #1a1f2b;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 16px #0ff2 0;
+}
+
+.dashboard-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.dashboard-profile img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin-right: 16px;
+  border: 2px solid #00ffe7;
+  box-shadow: 0 0 8px #00ffe7aa;
+}
+
+.dashboard-name {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.dashboard-steamid {
+  font-size: 0.9em;
+  color: #7fffd4;
+}
+
+.dashboard-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.dashboard-sidebar nav li {
+  margin: 18px 0;
+}
+
+.dashboard-sidebar nav a {
+  color: #e0e6f0;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.dashboard-sidebar nav a:hover {
+  color: #00ffe7;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.dashboard-cards {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.dashboard-card {
+  background: #23283a;
+  border-radius: 16px;
+  box-shadow: 0 0 24px #00ffe733;
+  padding: 24px;
+  min-width: 260px;
+  flex: 1;
+  transition: box-shadow 0.2s;
+  position: relative;
+  z-index: 10; /* Even higher if you want extra pop */ 
+}
+
+.dashboard-card:hover {
+  border: 2px solid #00ffe7;
+  box-shadow: 0 0 32px #00ffe7aa;
+}
+
+.dashboard-card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.dashboard-game-title, .dashboard-friend-name {
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.dashboard-game-hours, .dashboard-friend-status {
+  color: #7fffd4;
+  font-size: 0.95em;
+}
+
+.dashboard-cards-grid {
+  display: grid;
+  grid-template-areas:
+    "large friends groups"
+    "large recent compare";
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 32px;
+}
+
+.dashboard-card-large {
+  grid-area: large;
+  min-height: 350px;
+}
+
+.dashboard-cards-grid > .dashboard-card:nth-child(2) { grid-area: friends; }
+.dashboard-cards-grid > .dashboard-card:nth-child(3) { grid-area: groups; }
+.dashboard-cards-grid > .dashboard-card:nth-child(4) { grid-area: recent; }
+.dashboard-cards-grid > .dashboard-card:nth-child(5) { grid-area: compare; }
+
+.dashboard-card button {
+  margin-top: 12px;
+  background: #00ffe7;
+  color: #181c24;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dashboard-card button:hover {
+  background: #00bfae;
+}

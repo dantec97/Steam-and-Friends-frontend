@@ -10,6 +10,8 @@ import Groups from "./components/Groups";
 import GroupDetails from "./components/GroupDetails";    
 import SteamAuthSuccess from "./components/SteamAuthSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Dashboard from "./components/Dashboard";
+
 
 function App() {
   return (
@@ -63,6 +65,14 @@ function App() {
           element={
             <ProtectedRoute>
               <GroupDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
             </ProtectedRoute>
           }
         />

@@ -1,0 +1,16 @@
+.lava-lamp-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lava-blob {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.32;
+  mix-blend-mode: lighten;
+  transition: background 1s;
+  will-change: left, top;
+}
