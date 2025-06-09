@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { apiFetch } from "../utils/api";
 
 const GameComparison = () => {
   const { gameId } = useParams();
@@ -8,7 +9,7 @@ const GameComparison = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/users/${steamId}/games/${gameId}/friends`)
+    apiFetch(`/api/users/${steamId}/games/${gameId}/friends`)
       .then((res) => res.json())
       .then((data) => {
         setFriends(data);

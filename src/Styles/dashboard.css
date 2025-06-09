@@ -11,6 +11,12 @@
   z-index: 1; /* Above the background */ 
 }
 
+
+.dashboard-sidebar {
+  position: relative;
+  z-index: 2; /* Above the background */ 
+}
+
 .dashboard-sidebar {
   width: 260px;
   background: #1a1f2b;
@@ -52,17 +58,47 @@
 
 .dashboard-sidebar nav li {
   margin: 18px 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  transition: transform 0.18s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
 }
 
 .dashboard-sidebar nav a {
   color: #e0e6f0;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s;
+  transition: color 0.18s;
+  position: relative;
+  display: block;
+  padding: 6px 12px;
+  z-index: 2;
 }
 
-.dashboard-sidebar nav a:hover {
-  color: #00ffe7;
+.dashboard-sidebar nav li:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 16px #00ffe7aa;
+  z-index: 1;
+}
+
+/* The animated fill effect */
+.dashboard-sidebar nav li::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 100%;
+  background: linear-gradient(90deg, #00ffe7 0%, #7f7fff 100%);
+  z-index: 1;
+  transition: left 0.28s cubic-bezier(.4,2,.6,1);
+  border-radius: 6px;
+}
+
+.dashboard-sidebar nav li:hover::before {
+  left: 0;
+}
+
+.dashboard-sidebar nav li:hover a {
+  color: #181c24;
+  transition: color 0.18s;
 }
 
 .dashboard-main {
@@ -145,4 +181,23 @@
 }
 .dashboard-card button:hover {
   background: #00bfae;
+}
+.arrow-btn {
+  background: none;
+  border: none;
+  color: #00ffe7;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0 12px;
+  transition: color 0.2s, transform 0.2s;
+  filter: drop-shadow(0 0 6px #00ffe7aa);
+}
+.arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  filter: none;
+}
+.arrow-btn:hover:not(:disabled) {
+  color: #7f7fff;
+  transform: scale(1.2);
 }

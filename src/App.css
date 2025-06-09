@@ -1,3 +1,15 @@
+@font-face {
+  font-family: 'Mera Pro';
+  src: url('/fonts/MeraPro-Regular.woff2') format('woff2'),
+       url('/fonts/MeraPro-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body, #root {
+  font-family: 'MeraPro-Regular', sans-serif;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -40,3 +52,4 @@
 .read-the-docs {
   color: #888;
 }
+
