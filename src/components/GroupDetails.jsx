@@ -85,16 +85,17 @@ const GroupDetails = () => {
   const handlePictureChange = async (e) => {
     e.preventDefault();
     setPicMsg("");
-    const res = await fetch(`/api/groups/${groupId}/picture`, {
+    const res = await apiFetch(`/api/groups/${groupId}/picture`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ picture_url: pictureUrl }),
+      Authorization: `Bearer ${localStorage.getItem("token")}`
     });
     if (res.ok) {
       setPicMsg("Group picture updated!");
       setPictureUrl(""); // Clear the input after successful update
       // Optionally, refresh group info to show new picture
-      fetch(`/api/groups/${groupId}`)
+      apiFetch(`/api/groups/${groupId}`)
         .then(res => res.json())
         .then(data => setGroup(data));
     } else {
