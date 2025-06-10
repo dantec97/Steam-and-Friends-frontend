@@ -5,6 +5,56 @@ import "../Styles/dashboard.css";
 import { apiFetch } from "../utils/api";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"; // npm install recharts
 
+function PlaytimeGauge({ value, max = 1000, animate = true }) {
+  const percent = Math.min(value / max, 1);
+  const r = 60;
+  const arcLen = Math.PI * r; // Full semicircle length
+  const dashOffset = arcLen * (1 - percent);
+
+  return (
+    <svg width="140" height="80" viewBox="0 0 140 80">
+      {/* Background arc */}
+      <path
+        d="M10,70 A60,60 0 0,1 130,70"
+        fill="none"
+        stroke="#23283a"
+        strokeWidth="16"
+      />
+      {/* Foreground arc (always full, but revealed by dashoffset) */}
+      <path
+        className={animate ? "gauge-arc-animated" : ""}
+        d="M10,70 A60,60 0 0,1 130,70"
+        fill="none"
+        stroke="#00ffe7"
+        strokeWidth="16"
+        strokeLinecap="round"
+        strokeDasharray={arcLen}
+        strokeDashoffset={animate ? arcLen : dashOffset}
+        style={{
+          transition: "stroke-dashoffset 1.1s cubic-bezier(.4,2,.6,1)",
+          strokeDashoffset: animate ? arcLen : dashOffset
+        }}
+      />
+      {/* Needle */}
+      <line
+        x1={70}
+        y1={70}
+        x2={70 + r * Math.cos(Math.PI * (1 - percent))}
+        y2={70 + r * Math.sin(Math.PI * (1 - percent))}
+        stroke="#00ffe7"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
+      {/* Center dot */}
+      <circle cx={70} cy={70} r="6" fill="#00ffe7" />
+      {/* Text */}
+      <text x="70" y="75" textAnchor="middle" fill="#7fffd4" fontSize="16" fontFamily="Mera Pro, sans-serif">
+        {value}h
+      </text>
+    </svg>
+  );
+}
+
 const Dashboard = () => {
   const steamId = localStorage.getItem("steam_id");
   const displayName = localStorage.getItem("account_display_name") || "Player";
@@ -105,22 +155,15 @@ const Dashboard = () => {
       : null;
 
   // Friends' top games
-  const friendsTopGames = friends
-    .map(friend => {
-      const fg = (friend.games || []).slice().sort((a, b) => (b.playtime_minutes || 0) - (a.playtime_minutes || 0))[0];
-      return fg
-        ? {
-            steam_id: friend.steam_id,
-            display_name: friend.display_name,
-            avatar_url: friend.avatar_url,
-            top_game: fg.name,
-            top_game_hours: Math.round((fg.playtime_minutes || 0) / 60),
-            top_game_img: fg.image_url,
-          }
-        : null;
-    })
-    .filter(Boolean)
-    .slice(0, 5);
+  const [friendsTopGames, setFriendsTopGames] = useState([]);
+
+  useEffect(() => {
+    if (!steamId) return;
+    apiFetch(`/api/users/${steamId}/friends_top_games`)
+      .then(res => res.json())
+      .then(data => setFriendsTopGames(data || []))
+      .catch(() => setFriendsTopGames([]));
+  }, [steamId]);
 
   // Online friends count (if you have status info)
   const onlineFriends = friends.filter(f => f.personastate === 1);
@@ -129,6 +172,37 @@ const Dashboard = () => {
   useEffect(() => {
     if (groupIndex >= groups.length) setGroupIndex(0);
   }, [groups]);
+
+  // Animation state for bars
+  const [animateBars, setAnimateBars] = useState(true);
+
+  useEffect(() => {
+    // Remove animation class after animation duration
+    if (animateBars) {
+      const timeout = setTimeout(() => setAnimateBars(false), 1000); // match your animation duration
+      return () => clearTimeout(timeout);
+    }
+  }, [animateBars]);
+
+  // Total playtime state
+  const [totalPlaytime, setTotalPlaytime] = useState(0);
+
+  useEffect(() => {
+    if (!steamId) return;
+    apiFetch(`/api/users/${steamId}/total_playtime`)
+      .then(res => res.json())
+      .then(data => setTotalPlaytime(Math.round((data.total_playtime_minutes || 0) / 60)))
+      .catch(() => setTotalPlaytime(0));
+  }, [steamId]);
+
+  // Animation state for gauge
+  const [animateGauge, setAnimateGauge] = useState(true);
+  useEffect(() => {
+    if (animateGauge) {
+      const timeout = setTimeout(() => setAnimateGauge(false), 1100);
+      return () => clearTimeout(timeout);
+    }
+  }, [animateGauge]);
 
   if (loading) return <div className="dashboard-main">Loading dashboard...</div>;
 
@@ -173,7 +247,7 @@ const Dashboard = () => {
           </div>
 
           {/* Friends Card */}
-          <div className="dashboard-card">
+          <div className="dashboard-card dashboard-card-friends">
             <h3>Friends</h3>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {friends.slice(0, 5).map(friend => (
@@ -191,7 +265,7 @@ const Dashboard = () => {
           </div>
 
           {/* Groups Card */}
-          <div className="dashboard-card">
+          <div className="dashboard-card dashboard-card-groups">
             <h3>Groups</h3>
             <ul>
               {groups.slice(0, 3).map(group => (
@@ -209,7 +283,7 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity Card */}
-          <div className="dashboard-card">
+          <div className="dashboard-card dashboard-card-recent">
             <h3>Recent Activity</h3>
             <ul>
               {recentActivity.length === 0 && <li>No recent activity.</li>}
@@ -220,14 +294,14 @@ const Dashboard = () => {
           </div>
 
           {/* Game Comparison Card */}
-          <div className="dashboard-card">
+          <div className="dashboard-card dashboard-card-compare">
             <h3>Compare Games</h3>
             <p>See which games you and your friends or group have in common.</p>
             <button onClick={() => navigate("/games/1/comparison")}>Compare Now</button>
           </div>
 
           {/* Playtime Graph Card */}
-          <div className="dashboard-card dashboard-card-graph">
+          <div className={`dashboard-card dashboard-card-graph${animateBars ? " animate-bars" : ""}`}>
             <h3>Top 5 Games by Playtime</h3>
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={topGamesForChart}>
@@ -243,25 +317,35 @@ const Dashboard = () => {
           <div className="dashboard-card dashboard-card-friends-top">
             <h3>Friends’ Top Games</h3>
             <div style={{ display: "flex", gap: 16, overflowX: "auto" }}>
-              {friendsTopGames.map(friend => (
-                <div key={friend.steam_id} style={{ minWidth: 120, textAlign: "center" }}>
-                  <img src={friend.avatar_url} alt={friend.display_name} style={{ width: 36, borderRadius: "50%" }} />
-                  <div style={{ fontSize: 13, margin: "4px 0" }}>{friend.display_name}</div>
-                  <img src={friend.top_game_img} alt={friend.top_game} style={{ width: 32, borderRadius: 6 }} />
-                  <div style={{ fontSize: 12 }}>{friend.top_game}</div>
-                  <div style={{ color: "#7fffd4", fontSize: 12 }}>{friend.top_game_hours}h</div>
-                </div>
-              ))}
+              {friendsTopGames
+                .filter(game => game.appid !== 431960) // Exclude Wallpaper Engine
+                .slice(0, 3) // Only top 3
+                .length === 0 ? (
+                <div style={{ color: "#888" }}>No data yet. Sync your friends' games!</div>
+              ) : (
+                friendsTopGames
+                  .filter(game => game.appid !== 431960)
+                  .slice(0, 2)
+                  .map(game => (
+                    <div key={game.appid} style={{ minWidth: 120, textAlign: "center" }}>
+                      <img src={game.image_url} alt={game.name} style={{ width: 36, borderRadius: 6 }} />
+                      <div style={{ fontSize: 13, margin: "4px 0" }}>{game.name}</div>
+                      <div style={{ color: "#7fffd4", fontSize: 12 }}>
+                        {Math.round((game.total_playtime || 0) / 60)}h total
+                      </div>
+                    </div>
+                  ))
+              )}
             </div>
           </div>
 
-          {/* Online Friends Counter */}
-          <div className="dashboard-card">
-            <h3>Friends Online</h3>
-            <div style={{ fontSize: 32, color: "#00ffe7", fontWeight: "bold" }}>
-              {onlineFriends.length}
+          {/* Total Playtime Gauge Card */}
+          <div className="dashboard-card dashboard-card-gauge">
+            <h3>Total Playtime</h3>
+            <PlaytimeGauge value={totalPlaytime} max={1000} animate={animateGauge} />
+            <div style={{ textAlign: "center", color: "#7fffd4", marginTop: 8 }}>
+              {totalPlaytime.toLocaleString()} hours played
             </div>
-            <div style={{ fontSize: 14, color: "#7fffd4" }}>out of {friends.length} friends</div>
           </div>
 
           {/* Large Top Group Games Card */}
