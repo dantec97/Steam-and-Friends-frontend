@@ -39,6 +39,10 @@ const Groups = () => {
     if (res.ok) {
       setMessage(`Group "${data.name}" created!`);
       setGroupName("");
+      // Optionally, refresh groups list here
+      apiFetch(`/api/users/${steamId}/groups`)
+        .then((res) => res.json())
+        .then((data) => setGroups(data || []));
     } else {
       setMessage(data.error || "Failed to create group");
     }

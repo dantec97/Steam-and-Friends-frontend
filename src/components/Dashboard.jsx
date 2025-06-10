@@ -204,6 +204,120 @@ const Dashboard = () => {
     }
   }, [animateGauge]);
 
+  // New group state
+  const [groupName, setGroupName] = useState("");
+  const [groupCreateMsg, setGroupCreateMsg] = useState("");
+  const [showGroupForm, setShowGroupForm] = useState(false);
+  const [groupCreateStep, setGroupCreateStep] = useState("name");
+  const [newGroupId, setNewGroupId] = useState(null);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [groupPicUrl, setGroupPicUrl] = useState("");
+  const [groupPicMsg, setGroupPicMsg] = useState("");
+
+  // Handle group creation
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    setGroupCreateMsg("");
+    const res = await apiFetch("/api/groups", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: groupName, owner_steam_id: steamId }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setGroupCreateMsg(`Group "${data.name}" created!`);
+      setNewGroupId(data.group_id);
+      setGroupCreateStep("members");
+      setGroupName("");
+      apiFetch(`/api/users/${steamId}/groups`)
+        .then(res => res.json())
+        .then(data => setGroups(data || []));
+    } else {
+      setGroupCreateMsg(data.error || "Failed to create group");
+    }
+  };
+
+  const handleAddMembers = async () => {
+    if (!newGroupId || selectedMembers.length === 0) return;
+    await apiFetch(`/api/groups/${newGroupId}/members`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ steam_ids: selectedMembers }),
+    });
+    setGroupCreateStep("picture");
+  };
+
+  const handleSetGroupPic = async (e) => {
+    e.preventDefault();
+    setGroupPicMsg("");
+    if (!newGroupId || !groupPicUrl) return;
+    const res = await apiFetch(`/api/groups/${newGroupId}/picture`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ picture_url: groupPicUrl }),
+    });
+    if (res.ok) {
+      setGroupPicMsg("Picture updated!");
+      setGroupPicUrl("");
+      setShowGroupForm(false);
+      setGroupCreateStep("name");
+      setSelectedMembers([]);
+      setNewGroupId(null);
+      setGroupPicMsg("");
+      // Optionally refresh groups
+      apiFetch(`/api/users/${steamId}/groups`)
+        .then(res => res.json())
+        .then(data => setGroups(data || []));
+    } else {
+      setGroupPicMsg("Failed to update picture.");
+    }
+  };
+
+  const [groupSort, setGroupSort] = useState("size"); // default sort method
+  const sortOptions = [
+    { value: "size", label: "By Size" },
+    { value: "newest", label: "Newest First" },
+    { value: "oldest", label: "Oldest First" },
+    { value: "alpha", label: "A-Z" }
+  ];
+  const [sortOpen, setSortOpen] = useState(false);
+
+  // Group sorting function
+  function getSortedGroups(groups, method) {
+    if (!Array.isArray(groups)) return [];
+    switch (method) {
+      case "size":
+        return [...groups].sort((a, b) => (b.member_count || 0) - (a.member_count || 0));
+      case "newest":
+        return [...groups].sort((a, b) => (b.group_id || 0) - (a.group_id || 0)); // assumes higher id = newer
+      case "oldest":
+        return [...groups].sort((a, b) => (a.group_id || 0) - (b.group_id || 0));
+      case "alpha":
+        return [...groups].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      default:
+        return groups;
+    }
+  }
+
+  // Compare games state
+  const [selectedFriend, setSelectedFriend] = useState("");
+  const [compareGames, setCompareGames] = useState([]);
+  const [compareLoading, setCompareLoading] = useState(false);
+  const [compareAttempted, setCompareAttempted] = useState(false);
+
+  const handleCompare = () => {
+    if (!selectedFriend) return;
+    setCompareAttempted(true);
+    setCompareLoading(true);
+    apiFetch(`/api/compare/${steamId}/${selectedFriend}`)
+      .then(res => res.json())
+      .then(data => {
+        setCompareGames(data || []);
+        setCompareLoading(false);
+      })
+      .catch(() => setCompareLoading(false));
+  };
+
   if (loading) return <div className="dashboard-main">Loading dashboard...</div>;
 
   return (
@@ -266,9 +380,153 @@ const Dashboard = () => {
 
           {/* Groups Card */}
           <div className="dashboard-card dashboard-card-groups">
-            <h3>Groups</h3>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <h3>Groups</h3>
+              {!showGroupForm && (
+                <button
+                  aria-label="Create Group"
+                  style={{
+                    background: "#00ffe7",
+                    color: "#181c24",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: 28,
+                    height: 28,
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: 8
+                  }}
+                  onClick={() => {
+                    setShowGroupForm(true);
+                    setGroupCreateStep("name");
+                    setGroupCreateMsg("");
+                    setSelectedMembers([]);
+                    setGroupPicUrl("");
+                    setGroupPicMsg("");
+                  }}
+                >+</button>
+              )}
+              {showGroupForm && (
+                <button
+                  aria-label="Cancel"
+                  style={{ background: "none", color: "#888", border: "none", fontSize: 18, cursor: "pointer", marginLeft: 8 }}
+                  onClick={() => {
+                    setShowGroupForm(false);
+                    setGroupCreateStep("name");
+                    setSelectedMembers([]);
+                    setNewGroupId(null);
+                    setGroupPicUrl("");
+                    setGroupPicMsg("");
+                  }}
+                >✕</button>
+              )}
+            </div>
+            {showGroupForm && groupCreateStep === "name" && (
+              <form onSubmit={handleCreateGroup} style={{ marginBottom: 12, marginTop: 8, display: "flex", alignItems: "center" }}>
+                <input
+                  type="text"
+                  placeholder="New Group Name"
+                  value={groupName}
+                  onChange={e => setGroupName(e.target.value)}
+                  required
+                  style={{ marginRight: 8, padding: "4px 8px", borderRadius: 4, border: "1px solid #333" }}
+                  autoFocus
+                />
+                <button type="submit" style={{ marginRight: 8 }}>Create</button>
+              </form>
+            )}
+            {showGroupForm && groupCreateStep === "members" && (
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ marginBottom: 8 }}>Select Members:</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {friends.map(friend => (
+                    <button
+                      key={friend.steam_id}
+                      type="button"
+                      style={{
+                        background: selectedMembers.includes(friend.steam_id) ? "#00ffe7" : "#23283a",
+                        color: selectedMembers.includes(friend.steam_id) ? "#181c24" : "#7fffd4",
+                        border: "1px solid #00ffe7",
+                        borderRadius: 6,
+                        padding: "4px 8px",
+                        cursor: "pointer"
+                      }}
+                      onClick={() => {
+                        setSelectedMembers(members =>
+                          members.includes(friend.steam_id)
+                            ? members.filter(id => id !== friend.steam_id)
+                            : [...members, friend.steam_id]
+                        );
+                      }}
+                    >
+                      {friend.display_name || friend.steam_id}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  style={{ marginTop: 12 }}
+                  onClick={handleAddMembers}
+                  disabled={selectedMembers.length === 0}
+                >
+                  Add Members
+                </button>
+              </div>
+            )}
+            {showGroupForm && groupCreateStep === "picture" && (
+              <form onSubmit={handleSetGroupPic} style={{ marginBottom: 12, marginTop: 8, display: "flex", alignItems: "center" }}>
+                <input
+                  type="text"
+                  placeholder="Group Picture URL"
+                  value={groupPicUrl}
+                  onChange={e => setGroupPicUrl(e.target.value)}
+                  style={{ marginRight: 8, padding: "4px 8px", borderRadius: 4, border: "1px solid #333" }}
+                  autoFocus
+                />
+                <button type="submit" style={{ marginRight: 8 }}>Set Picture</button>
+                {groupPicMsg && <span style={{ color: "#7fffd4", marginLeft: 8 }}>{groupPicMsg}</span>}
+              </form>
+            )}
+            {groupCreateMsg && <div style={{ color: "#7fffd4", marginBottom: 8 }}>{groupCreateMsg}</div>}
+            <div className="dashboard-group-sort-wrap" style={{ marginBottom: 10 }}>
+              <label htmlFor="group-sort" style={{ marginRight: 8, color: "#7fffd4" }}>Sort:</label>
+              <div
+                className="custom-dropdown"
+                tabIndex={0}
+                onBlur={() => setSortOpen(false)}
+                style={{ display: "inline-block", position: "relative", minWidth: 120 }}
+              >
+                <button
+                  type="button"
+                  className="custom-dropdown-btn"
+                  onClick={() => setSortOpen(o => !o)}
+                >
+                  {sortOptions.find(o => o.value === groupSort)?.label}
+                  <span style={{ marginLeft: 8, color: "#00ffe7" }}>▼</span>
+                </button>
+                {sortOpen && (
+                  <ul className="custom-dropdown-list">
+                    {sortOptions.map(opt => (
+                      <li
+                        key={opt.value}
+                        className={groupSort === opt.value ? "active" : ""}
+                        onClick={() => {
+                          setGroupSort(opt.value);
+                          setSortOpen(false);
+                        }}
+                      >
+                        {opt.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
             <ul>
-              {groups.slice(0, 3).map(group => (
+              {getSortedGroups(groups, groupSort).slice(0, 3).map(group => (
                 <li key={group.group_id} style={{ display: "flex", alignItems: "center" }}>
                   <img
                     src={group.picture_url || "/Logo.jpeg"}
@@ -276,6 +534,9 @@ const Dashboard = () => {
                     style={{ width: 24, height: 24, borderRadius: 6, marginRight: 8 }}
                   />
                   <span>{group.name}</span>
+                  <span style={{ marginLeft: "auto", color: "#7fffd4", fontSize: 12 }}>
+                    {group.member_count ? `${group.member_count} members` : ""}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -283,7 +544,8 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Activity Card */}
-          <div className="dashboard-card dashboard-card-recent">
+          {/* <div className="dashboard-card dashboard-card-recent"> */}
+          <div className="sizefix dashboard-card dashboard-card-compare dashboard-card-small">
             <h3>Recent Activity</h3>
             <ul>
               {recentActivity.length === 0 && <li>No recent activity.</li>}
@@ -294,10 +556,83 @@ const Dashboard = () => {
           </div>
 
           {/* Game Comparison Card */}
-          <div className="dashboard-card dashboard-card-compare">
+          <div className=" sizefix dashboard-card dashboard-card-compare dashboard-card-small ">
             <h3>Compare Games</h3>
-            <p>See which games you and your friends or group have in common.</p>
-            <button onClick={() => navigate("/games/1/comparison")}>Compare Now</button>
+            <div>
+              <select
+                value={selectedFriend}
+                onChange={e => setSelectedFriend(e.target.value)}
+                style={{
+                  flex: 1,
+                  marginBottom: 8,
+                  background: "#181c24",
+                  color: "#00ffe7",
+                  border: "1.5px solid #00ffe7",
+                  borderRadius: 8,
+                  padding: "6px 12px",
+                  fontSize: "1rem"
+                }}
+              >
+                <option value="">Select a friend…</option>
+                {friends.map(f => (
+                  <option key={f.steam_id} value={f.steam_id}>
+                    {f.display_name || f.steam_id}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={handleCompare}
+                disabled={!selectedFriend || compareLoading}
+                style={{ marginLeft: 8 }}
+              >
+                {compareLoading ? "Comparing..." : "Compare"}
+              </button>
+            </div>
+            {compareGames.length > 0 && (
+              <div style={{
+                flex: 1,
+                minHeight: 0, // allows flex children to shrink
+                overflowY: "auto",
+                marginTop: 12,
+                marginBottom: 8,
+                paddingRight: 4
+              }}>
+                <ul style={{ margin: 0, padding: 0 }}>
+                  {compareGames.slice(0, 8).map(game => (
+                    <li key={game.appid} style={{ display: "flex", alignItems: "center", marginBottom: 6 }}>
+                      <img src={game.image_url} alt={game.name} style={{ width: 28, height: 28, borderRadius: 6, marginRight: 8 }} />
+                      <span style={{ flex: 1 }}>{game.name}</span>
+                      <span style={{ color: "#7fffd4", marginLeft: 8 }}>
+                        You: {Math.round(game.user_playtime / 60)}h / Friend: {Math.round(game.friend_playtime / 60)}h
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {compareGames.length > 8 && (
+                  <button
+                    style={{
+                      display: "block",
+                      margin: "8px auto 0 auto",
+                      background: "#23283a",
+                      color: "#00ffe7",
+                      border: "none",
+                      borderRadius: 6,
+                      padding: "4px 12px",
+                      cursor: "pointer"
+                    }}
+                    onClick={() => navigate(`/friends/${selectedFriend}/games`)}
+                  >
+                    View All
+                  </button>
+                )}
+              </div>
+            )}
+             {compareAttempted && compareGames.length === 0 && selectedFriend && !compareLoading && (
+              <div style={{ color: "#888", marginTop: 12 }}>No games in common.</div>
+            )}
+            <p style={{ marginTop: 10, color: "#aaa" }}>
+              See which games you and your friends have in common!
+            </p>
           </div>
 
           {/* Playtime Graph Card */}

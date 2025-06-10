@@ -203,6 +203,131 @@
   transform: scale(1.2);
 }
 
+/* Techy custom select */
+/* .dashboard-group-sort-select {
+  background: #181c24;
+  color: #00ffe7;
+  border: 1.5px solid #00ffe7;
+  border-radius: 8px;
+  padding: 6px 28px 6px 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  appearance: none;
+  outline: none;
+  box-shadow: 0 0 8px #00ffe733;
+  transition: border 0.2s, box-shadow 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+.dashboard-group-sort-select:focus {
+  border: 1.5px solid #7fffd4;
+  box-shadow: 0 0 12px #00ffe7aa;
+}
+.dashboard-group-sort-wrap {
+  position: relative;
+  display: inline-block;
+}
+.dashboard-group-sort-wrap::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #00ffe7;
+  pointer-events: none;
+  font-size: 0.9em;
+} */
+
+.dashboard-card {
+  background: #23283a;
+  border-radius: 16px;
+  box-shadow: 0 0 24px #00ffe733;
+  padding: 24px;
+  min-width: 260px;
+  flex: 1;
+  transition: box-shadow 0.2s;
+  position: relative;
+  z-index: 10;
+  /* Remove min-height, max-height, and overflow here */
+}
+
+.dashboard-card-small {
+  min-height: 220px;
+/* below was affecting the post compare look where the cards grow  */
+  max-height: 320px; 
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sizefix {
+  min-height: 220px;
+  max-height: 320px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card-recent {
+  min-height: 220px;
+  max-height: 220px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Custom dropdown styles */
+.custom-dropdown-btn {
+  background: #181c24;
+  color: #00ffe7;
+  border: 1.5px solid #00ffe7;
+  border-radius: 8px;
+  padding: 6px 28px 6px 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0 8px #00ffe733;
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.custom-dropdown-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 110%;
+  background: #23283a;
+  border: 1.5px solid #00ffe7;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px #00ffe733;
+  z-index: 100;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  animation: dropdownFadeIn 0.18s cubic-bezier(.4,2,.6,1);
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.custom-dropdown-list li {
+  padding: 8px 16px;
+  color: #7fffd4;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  border-radius: 6px;
+}
+
+.custom-dropdown-list li.active,
+.custom-dropdown-list li:hover {
+  background: #00ffe7;
+  color: #181c24;
+}
+
 /* Animate the bars "growing" from the bottom up */
 /* .recharts-bar-rectangle path {
   transform: scaleY(0);
