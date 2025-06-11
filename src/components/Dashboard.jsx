@@ -36,21 +36,11 @@ function PlaytimeGauge({ value, max = 1000, animate = true }) {
         }}
       />
       {/* Needle */}
-      <line
-        x1={70}
-        y1={70}
-        x2={70 + r * Math.cos(Math.PI * (1 - percent))}
-        y2={70 + r * Math.sin(Math.PI * (1 - percent))}
-        stroke="#00ffe7"
-        strokeWidth="4"
-        strokeLinecap="round"
-      />
+      
       {/* Center dot */}
-      <circle cx={70} cy={70} r="6" fill="#00ffe7" />
+      
       {/* Text */}
-      <text x="70" y="75" textAnchor="middle" fill="#7fffd4" fontSize="16" fontFamily="Mera Pro, sans-serif">
-        {value}h
-      </text>
+      
     </svg>
   );
 }
@@ -333,6 +323,7 @@ const Dashboard = () => {
         </div>
         <nav>
           <ul>
+            <li><Link to="/dashboard">Dashboard</Link></li>
             <li><Link to="/my_games">My Games</Link></li>
             <li><Link to="/friends">Friends</Link></li>
             <li><Link to="/groups">Groups</Link></li>
@@ -676,10 +667,13 @@ const Dashboard = () => {
 
           {/* Total Playtime Gauge Card */}
           <div className="dashboard-card dashboard-card-gauge">
-            <h3>Total Playtime</h3>
-            <PlaytimeGauge value={totalPlaytime} max={1000} animate={animateGauge} />
-            <div style={{ textAlign: "center", color: "#7fffd4", marginTop: 8 }}>
-              {totalPlaytime.toLocaleString()} hours played
+            <div className="total-playtime-inner">
+              <h3>Total Playtime</h3>
+              <PlaytimeGauge value={totalPlaytime} max={1000} animate={animateGauge} />
+            
+              <div className="total-playtime-label">
+                {totalPlaytime.toLocaleString()} hours played
+              </div>
             </div>
           </div>
 

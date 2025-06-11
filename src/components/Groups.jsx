@@ -1,141 +1,144 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
-const DEFAULT_GROUP_PIC = "/Logo.jpeg"; // Or any placeholder image
+import "../Styles/Pages.css";
 
 const Groups = () => {
-  const [groupName, setGroupName] = useState("");
-  const [message, setMessage] = useState("");
-  const [syncing, setSyncing] = useState(false);
-  const [syncMsg, setSyncMsg] = useState("");
-  const [steamIds, setSteamIds] = useState("");
   const [groups, setGroups] = useState([]);
-  const [ownedGroups, setOwnedGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [groupName, setGroupName] = useState("");
+  const [groupPic, setGroupPic] = useState(null);
+  const [groupPicPreview, setGroupPicPreview] = useState("");
+  const [error, setError] = useState("");
   const steamId = localStorage.getItem("steam_id");
   const navigate = useNavigate();
 
-  // Fetch all groups and owned groups
   useEffect(() => {
-    if (!steamId) return;
     apiFetch(`/api/users/${steamId}/groups`)
       .then((res) => res.json())
-      .then((data) => setGroups(data))
-      .catch(() => setGroups([]));
-    apiFetch(`/api/users/${steamId}/groups_owned`)
-      .then((res) => res.json())
-      .then((data) => setOwnedGroups(data))
-      .catch(() => setOwnedGroups([]));
-  }, [steamId, message]);
+      .then((data) => {
+        setGroups(data.groups || data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [steamId]);
 
-  const handleCreateGroup = async (e) => {
-    e.preventDefault();
-    setMessage("");
-    const res = await apiFetch("/api/groups", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: groupName, owner_steam_id: steamId }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setMessage(`Group "${data.name}" created!`);
-      setGroupName("");
-      // Optionally, refresh groups list here
-      apiFetch(`/api/users/${steamId}/groups`)
-        .then((res) => res.json())
-        .then((data) => setGroups(data || []));
+  const handleFormToggle = () => {
+    setShowForm((f) => !f);
+    setGroupName("");
+    setGroupPic(null);
+    setGroupPicPreview("");
+    setError("");
+  };
+
+  const handlePicChange = (e) => {
+    const file = e.target.files[0];
+    setGroupPic(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setGroupPicPreview(reader.result);
+      reader.readAsDataURL(file);
     } else {
-      setMessage(data.error || "Failed to create group");
+      setGroupPicPreview("");
     }
   };
 
-  const handleSyncGroup = async () => {
-    setSyncing(true);
-    setSyncMsg("");
-    const ids = steamIds.split(",").map((id) => id.trim()).filter(Boolean);
-    const res = await apiFetch("/api/sync_group_games", {
+  const handleCreateGroup = (e) => {
+    e.preventDefault();
+    if (!groupName) {
+      setError("Group name required.");
+      return;
+    }
+    // Example: handle image upload with FormData
+    const formData = new FormData();
+    formData.append("name", groupName);
+    if (groupPic) formData.append("picture", groupPic);
+
+    apiFetch(`/api/users/${steamId}/groups`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ steam_ids: ids }),
-    });
-    const data = await res.json();
-    setSyncing(false);
-    setSyncMsg(data.synced ? "Group sync complete!" : data.error || "Sync failed");
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(() => {
+        setShowForm(false);
+        setGroupName("");
+        setGroupPic(null);
+        setGroupPicPreview("");
+        setError("");
+        // Refresh groups
+        return apiFetch(`/api/users/${steamId}/groups`).then((res) => res.json());
+      })
+      .then((data) => setGroups(data.groups || data))
+      .catch(() => setError("Failed to create group."));
   };
 
-  const getGroupPic = (group) =>
-    group.picture_url && group.picture_url.trim() !== "" ? group.picture_url : DEFAULT_GROUP_PIC;
-
   return (
-    <div>
-      <h2>Create a Group</h2>
-      <form onSubmit={handleCreateGroup}>
-        <input
-          type="text"
-          placeholder="Group Name"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          required
-        />
-        <button type="submit">Create Group</button>
-      </form>
-      {message && <div style={{ marginTop: 10 }}>{message}</div>}
-
-      <div style={{ marginTop: 30 }}>
-        <h3>Groups I Own</h3>
-        <ul>
-          {ownedGroups.length === 0 && <li>No groups owned.</li>}
-          {ownedGroups.map((group) => (
-            <li key={group.group_id} style={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={getGroupPic(group)}
-                alt="Group"
-                style={{ width: 32, height: 32, borderRadius: 8, marginRight: 8 }}
+    <div className="dashboard-root">
+      <SidebarNav />
+      <main className="dashboard-main">
+        <div className="page-card">
+          <div className="mygames-header">
+            <h2>Groups</h2>
+            <button className="sync-btn-small" onClick={handleFormToggle}>
+              {showForm ? "Cancel" : "Create Group"}
+            </button>
+          </div>
+          {showForm && (
+            <form className="group-form" onSubmit={handleCreateGroup}>
+              <input
+                type="text"
+                placeholder="Group Name"
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                className="group-input"
+                required
               />
-              <button
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "blue",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-                onClick={() => navigate(`/groups/${group.group_id}`)}
-              >
-                {group.name}
+              <label className="group-pic-label">
+                {groupPicPreview ? (
+                  <img src={groupPicPreview} alt="Preview" className="group-pic-preview" />
+                ) : (
+                  <span>Upload Group Image</span>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePicChange}
+                  className="group-pic-input"
+                />
+              </label>
+              <button type="submit" className="compare-btn" style={{ marginTop: 8 }}>
+                Create
               </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div style={{ marginTop: 30 }}>
-        <h3>All Groups (I'm a Member)</h3>
-        <ul>
-          {groups.length === 0 && <li>No group memberships.</li>}
-          {groups.map((group) => (
-            <li key={group.group_id} style={{ display: "flex", alignItems: "center" }}>
-              <img
-                src={getGroupPic(group)}
-                alt="Group"
-                style={{ width: 32, height: 32, borderRadius: 8, marginRight: 8 }}
-              />
-              <button
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "blue",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-                onClick={() => navigate(`/groups/${group.group_id}`)}
-              >
-                {group.name}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-
+              {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+            </form>
+          )}
+          <ul>
+            {groups.map((group) => (
+              <li key={group.group_id} className="mygames-list-item">
+                <img
+                  src={group.picture_url || "/Logo.jpeg"}
+                  alt={group.name}
+                  className="avatar"
+                />
+                <div className="mygames-info">
+                  <strong>{group.name}</strong>
+                  <span className="mygames-playtime">
+                    {group.member_count} members
+                  </span>
+                </div>
+                <button
+                  className="compare-btn"
+                  onClick={() => navigate(`/groups/${group.group_id}`)}
+                >
+                  View Group
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </main>
     </div>
   );
 };

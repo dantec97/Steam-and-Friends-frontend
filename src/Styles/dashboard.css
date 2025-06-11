@@ -3,9 +3,14 @@
   min-height: 100vh;
   background: #181c24;
   color: #e0e6f0;
-  font-family: 'MeraPro-Regular', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  font-family: 'Satoshi', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
 
+h3{
+  font-weight: 700;
+  color: #00ffe7;
+  font-family: 'Satoshi', 'Roboto', 'Arial', sans-serif;
+}
 
 .dashboard-main {
   position: relative;
@@ -131,6 +136,7 @@
 .dashboard-card:hover {
   border: 2px solid #00ffe7;
   box-shadow: 0 0 32px #00ffe7aa;
+  
 }
 
 .dashboard-card-content {
@@ -368,3 +374,35 @@
   }
 }
 
+/* EKG STYLING */
+.ekg-gif-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+  
+}
+
+.ekg-gif {
+  width: 100px;
+  height: 28px;
+  background: rgba(35, 40, 58, 0.65); /* semi-transparent */
+  filter: hue-rotate(55deg) brightness(1.2);
+  mix-blend-mode: screen;
+  border-radius: 4px;
+}
+
+.total-playtime-label {
+  text-align: center;
+  color: #7fffd4;
+  margin-top: 8px;
+  
+}
+
+
+
+.total-playtime-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}

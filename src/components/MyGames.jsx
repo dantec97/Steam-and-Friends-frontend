@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
+import "../Styles/Pages.css";
+import SidebarNav from "./SidebarNav";
 
 const MyGames = () => {
   const [games, setGames] = useState([]);
@@ -48,33 +50,49 @@ const MyGames = () => {
     return `${hours}h ${mins}m`;
   }
 
-  if (loading) return <div>Loading games...</div>;
-  if (error) return <div style={{ color: "red" }}>{error}</div>;
+  if (loading) return <div className="page-root"><div className="page-card">Loading games...</div></div>;
+  if (error) return <div className="page-root"><div className="page-card" style={{ color: "red" }}>{error}</div></div>;
 
   return (
-    <div>
-      <h2>My Games</h2>
-      <button onClick={handleSync} disabled={syncing}>
-        {syncing ? "Syncing..." : "Sync Games"}
-      </button>
-      <ul>
-        {games.map((game) => (
-          <li key={game.appid}>
-            <img
-              src={game.image_url}
-              alt={game.name}
-              style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
-            />
-            <strong>{game.name}</strong> — {formatPlaytime(game.playtime_minutes)} played
+    <div className="dashboard-root">
+      <SidebarNav />
+      <main className="dashboard-main">
+        <div className="page-card">
+          <div className="mygames-header">
+            <h2>My Games</h2>
             <button
-              style={{ marginLeft: 8 }}
-              onClick={() => navigate(`/games/${game.id}/comparison`)}
+              className="sync-btn-small"
+              onClick={handleSync}
+              disabled={syncing}
             >
-              Compare with Friends
+              {syncing ? "Syncing..." : "Sync Games"}
             </button>
-          </li>
-        ))}
-      </ul>
+          </div>
+          <ul>
+            {games.map((game) => (
+              <li key={game.appid} className="mygames-list-item">
+                <img
+                  src={game.image_url}
+                  alt={game.name}
+                  className="avatar"
+                />
+                <div className="mygames-info">
+                  <strong>{game.name}</strong>
+                  <span className="mygames-playtime">
+                    {formatPlaytime(game.playtime_minutes)} played
+                  </span>
+                </div>
+                <button
+                  className="compare-btn"
+                  onClick={() => navigate(`/games/${game.id}/comparison`)}
+                >
+                  Compare with Friends
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </main>
     </div>
   );
 };

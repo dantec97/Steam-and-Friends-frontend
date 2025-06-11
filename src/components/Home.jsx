@@ -11,6 +11,7 @@ const Home = () => {
     <div style={{ maxWidth: 600, margin: "40px auto", padding: 24 }}>
       <h1>Steam & Friends Dev Home</h1>
       <ul style={{ fontSize: "1.1em" }}>
+        <li><Link to="/dashboard">Dashboard</Link></li>
         <li><Link to="/signup">Signup</Link></li>
         <li><Link to="/login">Login</Link></li>
         <li><Link to="/my_games">My Games</Link></li>
