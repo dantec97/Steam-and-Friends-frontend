@@ -36,6 +36,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/friends/games" element={<FriendGames />} />
         <Route
           path="/friends/:friendSteamId/games"
           element={

@@ -128,9 +128,10 @@ h3{
   padding: 24px;
   min-width: 260px;
   flex: 1;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, border-color 0.2s;
   position: relative;
-  z-index: 10; /* Even higher if you want extra pop */ 
+  z-index: 10;
+  border: 2px solid transparent; /* <-- Add this line */
 }
 
 .dashboard-card:hover {
@@ -405,4 +406,34 @@ h3{
   flex-direction: column;
   align-items: center;
   width: 100%;
+}
+
+/* **** dash logo**** */
+
+.dashboard-logo-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 0 16px 0;
+  justify-content: center;
+  border-bottom: 1px solid #23283a;
+  margin-bottom: 12px;
+}
+
+.dashboard-logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px #00ffe7aa;
+  background: #181c24;
+}
+
+.dashboard-logo-text {
+  font-family: 'Satoshi', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #00ffe7;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px #00ffe755;
+  user-select: none;
 }

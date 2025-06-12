@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-const DEFAULT_GROUP_PIC = "/Logo.jpeg"; // Or any placeholder image
+import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
+import "../Styles/Pages.css";
+
+const DEFAULT_GROUP_PIC = "/Logo.jpeg";
 
 const GroupDetails = () => {
   const { groupId } = useParams();
@@ -12,13 +15,12 @@ const GroupDetails = () => {
   const [picMsg, setPicMsg] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState("");
-  const [addSteamId, setAddSteamId] = useState("");
   const [addMsg, setAddMsg] = useState("");
   const [delMsg, setDelMsg] = useState("");
   const [friends, setFriends] = useState([]);
   const [friendSearch, setFriendSearch] = useState("");
-  const [filteredFriends, setFilteredFriends] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredFriends, setFilteredFriends] = useState([]);
   const [comparisonLoading, setComparisonLoading] = useState(false);
   const [comparisonError, setComparisonError] = useState("");
   const [comparisonGames, setComparisonGames] = useState([]);
@@ -34,20 +36,16 @@ const GroupDetails = () => {
       });
     apiFetch(`/api/groups/${groupId}`)
       .then(res => res.json())
-      .then(data => {
-        setGroup(data);
-        // Do NOT setPictureUrl here, keep it empty unless user is editing
-      });
-    // Fetch user's friends
+      .then(data => setGroup(data));
     if (steamId) {
       apiFetch(`/api/users/${steamId}/friends_cached`)
         .then(res => res.json())
-        .then(data => setFriends(data))
+        .then(data => setFriends(data.friends || data))
         .catch(() => setFriends([]));
     }
   }, [groupId, addMsg, delMsg, steamId]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (members.length === 0) return;
     setComparisonLoading(true);
     setComparisonError("");
@@ -76,9 +74,26 @@ const GroupDetails = () => {
         .filter(
           f =>
             !members.some(m => m.steam_id === f.steam_id) &&
-            f.display_name.toLowerCase().includes(lower)
+            (f.display_name || f.steam_id).toLowerCase().includes(lower)
         )
-        .slice(0, 5)
+        .slice(0, 8)
+    );
+  }, [friendSearch, friends, members]);
+
+  // Show all friends not in group if search is empty, else filter
+  useEffect(() => {
+    const lower = friendSearch.toLowerCase();
+    setFilteredFriends(
+      friends
+        .filter(
+          f =>
+            !members.some(m => m.steam_id === f.steam_id) &&
+            (
+              !friendSearch ||
+              (f.display_name || f.steam_id).toLowerCase().includes(lower)
+            )
+        )
+        .slice(0, 4) // <-- Limit to 4
     );
   }, [friendSearch, friends, members]);
 
@@ -93,8 +108,7 @@ const GroupDetails = () => {
     });
     if (res.ok) {
       setPicMsg("Group picture updated!");
-      setPictureUrl(""); // Clear the input after successful update
-      // Optionally, refresh group info to show new picture
+      setPictureUrl("");
       apiFetch(`/api/groups/${groupId}`)
         .then(res => res.json())
         .then(data => setGroup(data));
@@ -117,25 +131,6 @@ const GroupDetails = () => {
     setSyncMsg(data.synced ? "Group sync complete!" : (data.error || "Sync failed"));
   };
 
-  // Add member by Steam ID
-  const handleAddMember = async (e) => {
-    e.preventDefault();
-    setAddMsg("");
-    if (!addSteamId) return;
-    const res = await apiFetch(`/api/groups/${groupId}/members`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ steam_ids: [addSteamId] }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setAddMsg("Member added!");
-      setAddSteamId("");
-    } else {
-      setAddMsg(data.error || "Failed to add member.");
-    }
-  };
-
   const handleAddMemberDirect = async (steamIdToAdd) => {
     setAddMsg("");
     const res = await apiFetch(`/api/groups/${groupId}/members`, {
@@ -153,7 +148,6 @@ const GroupDetails = () => {
     }
   };
 
-  // Delete member by Steam ID (prevent owner from deleting themselves)
   const handleDeleteMember = async (steamIdToDelete) => {
     setDelMsg("");
     const res = await apiFetch(`/api/groups/${groupId}/members/${steamIdToDelete}`, {
@@ -172,7 +166,6 @@ const GroupDetails = () => {
     setComparisonError("");
     setComparisonGames([]);
     try {
-      // Only fetch from your DB, do NOT sync with Steam API here
       const sharedRes = await apiFetch(`/api/groups/${groupId}/shared_games`);
       const sharedData = await sharedRes.json();
       if (sharedRes.ok && Array.isArray(sharedData)) {
@@ -186,166 +179,170 @@ const GroupDetails = () => {
     setComparisonLoading(false);
   };
 
-  if (loading) return <div>Loading group members...</div>;
+  if (loading) return <div className="page-root"><div className="page-card">Loading group members...</div></div>;
 
   // Find the owner's steam_id by matching group.owner_id to a member's user_id or steam_id
   const ownerMember = members.find(m => m.user_id === group.owner_id || m.steam_id === group.owner_steam_id);
   const ownerSteamId = ownerMember ? ownerMember.steam_id : null;
 
   return (
-    <div>
-      <h2>{group.name || "Group"} Members</h2>
-      <img
-        src={group.picture_url && group.picture_url.trim() !== "" ? group.picture_url : DEFAULT_GROUP_PIC}
-        alt="Group"
-        style={{ width: 100, borderRadius: 8, marginBottom: 16 }}
-      />
-      <form onSubmit={handlePictureChange} style={{ marginBottom: 16 }}>
-        <input
-          type="text"
-          placeholder="New group picture URL"
-          value={pictureUrl}
-          onChange={e => setPictureUrl(e.target.value)}
-          style={{ width: 300 }}
-        />
-        <button type="submit">Set Group Picture</button>
-      </form>
-      {picMsg && <div>{picMsg}</div>}
-
-      <form onSubmit={e => e.preventDefault()} style={{ marginBottom: 16, position: "relative" }}>
-        <h6>Add Member by Name</h6>
-        <input 
-          type="text"
-          placeholder="Type to search friends to add"
-          value={friendSearch}
-          onChange={e => {
-            setFriendSearch(e.target.value);
-            setShowDropdown(true);
-          }}
-          style={{ width: 240, marginRight: 8 }}
-          autoComplete="off"
-          onFocus={() => setShowDropdown(true)}
-          onBlur={() => setTimeout(() => setShowDropdown(false), 150)} // delay to allow click
-        />
-        <button
-          type="button"
-          style={{ marginLeft: 8 }}
-          onClick={() => {
-            setShowDropdown(!showDropdown);
-            setFriendSearch(""); // show all friends when dropdown is toggled
-          }}
-        >
-          {showDropdown ? "Hide List" : "Show All"}
-        </button>
-        {(showDropdown && (filteredFriends.length > 0 || !friendSearch)) && (
-          <ul style={{
-            listStyle: "none",
-            padding: 0,
-            margin: 0,
-            background: "#fff",
-            border: "1px solid #ccc",
-            position: "absolute",
-            zIndex: 10,
-            width: 260,
-            maxHeight: 150,
-            overflowY: "auto"
-          }}>
-            {(friendSearch ? filteredFriends : friends.filter(
-              f => !members.some(m => m.steam_id === f.steam_id)
-            ).slice(0, 20)).map(friend => (
-              <li
-                key={friend.steam_id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  padding: 4,
-                  color: "#222", // dark text for readability
-                  background: "#fff"
-                }}
-                onClick={() => {
-                  handleAddMemberDirect(friend.steam_id);
-                  setShowDropdown(false);
-                }}
-              >
-                <img
-                  src={friend.avatar_url}
-                  alt={friend.display_name}
-                  style={{ width: 24, height: 24, borderRadius: "50%", marginRight: 8 }}
-                />
-                {friend.display_name}
-              </li>
-            ))}
-            {(friendSearch ? filteredFriends : friends.filter(
-              f => !members.some(m => m.steam_id === f.steam_id)
-            ).length === 0) && (
-              <li style={{ color: "#888", padding: 4 }}>No friends found</li>
-            )}
-          </ul>
-        )}
-      </form>
-      {addMsg && <div>{addMsg}</div>}
-      {delMsg && <div>{delMsg}</div>}
-
-      <ul>
-        {members.map(member => (
-          <li key={member.steam_id} style={{ display: "flex", alignItems: "center" }}>
-            {member.avatar_url && (
+    <div className="dashboard-root">
+      <SidebarNav />
+      <main className="dashboard-main">
+        <div className="page-card">
+          <div className="mygames-header" style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
               <img
-                src={member.avatar_url}
-                alt={member.display_name}
-                style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
+                src={group.picture_url && group.picture_url.trim() !== "" ? group.picture_url : DEFAULT_GROUP_PIC}
+                alt="Group"
+                style={{ width: 64, borderRadius: 8, marginBottom: 0, boxShadow: "0 0 12px #00ffe7aa" }}
               />
-            )}
-            <strong>{member.display_name}</strong>
-            {/* Hide Remove button for the owner */}
-            {member.steam_id !== ownerSteamId && (
-              <button
-                style={{ marginLeft: 12, color: "red", border: "none", background: "none", cursor: "pointer" }}
-                onClick={() => handleDeleteMember(member.steam_id)}
-                title="Remove member"
-              >
-                Remove
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-      <div style={{ marginTop: 30 }}>
-        <button onClick={handleSyncGroup} disabled={syncing}>
-          {syncing ? "Syncing..." : "Sync Group Games from Steam"}
-        </button>
-        {syncMsg && <div style={{ marginTop: 10 }}>{syncMsg}</div>}
-      </div>
-      <div style={{ marginTop: 30 }}>
-        <button onClick={handleCompareGroupGames} disabled={comparisonLoading}>
-          {comparisonLoading ? "Comparing..." : "Compare Group Games"}
-        </button>
-        {comparisonError && <div style={{ color: "red", marginTop: 10 }}>{comparisonError}</div>}
-        {comparisonGames.length > 0 && (
-          <div style={{ marginTop: 16 }}>
-            <h4>Common Games</h4>
+              <h2 style={{ margin: 0 }}>{group.name || "Group"}</h2>
+            </div>
+            <form onSubmit={handlePictureChange} style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+              <input
+                type="text"
+                placeholder="New group picture URL"
+                value={pictureUrl}
+                onChange={e => setPictureUrl(e.target.value)}
+                style={{ width: 220, fontSize: "1em" }}
+              />
+              <button type="submit" className="compare-btn" style={{ margin: 0, padding: "6px 14px" }}>Set Picture</button>
+            </form>
+            {picMsg && <div style={{ color: "#7fffd4", marginTop: 6 }}>{picMsg}</div>}
+          </div>
+
+          {/* Add Member Search */}
+          <div className="mygames-header" style={{ marginBottom: 18 }}>
+            <h3>Add Member</h3>
+            <div
+              className="custom-dropdown"
+              tabIndex={0}
+              style={{ position: "relative", minWidth: 260, width: 260 }}
+              onBlur={() => setShowDropdown(false)}
+            >
+              <input
+                type="text"
+                className="custom-dropdown-btn"
+                style={{ width: "100%" }}
+                placeholder="Search for a friend to add..."
+                value={friendSearch}
+                onChange={e => {
+                  setFriendSearch(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                autoComplete="off"
+              />
+              {showDropdown && (
+                <ul className="custom-dropdown-list" style={{ maxHeight: 320, overflowY: "auto" }}>
+                  {filteredFriends.length === 0 && (
+                    <li style={{ color: "#888" }}>No friends found</li>
+                  )}
+                  {filteredFriends.map(f => (
+                    <li
+                      key={f.steam_id}
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        handleAddMemberDirect(f.steam_id);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      <img
+                        src={f.avatar_url}
+                        alt={f.display_name}
+                        style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 10 }}
+                      />
+                      {f.display_name || f.steam_id}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {addMsg && <div style={{ color: "#7fffd4", marginTop: 6 }}>{addMsg}</div>}
+          </div>
+
+          {/* Members List */}
+          <div className="mygames-header" style={{ marginBottom: 18 }}>
+            <h3>Members</h3>
             <ul>
-              {comparisonGames.map(game => (
-                <li key={game.appid}>
-                  <img src={game.image_url} alt={game.name} style={{ width: 32, marginRight: 8 }} />
-                  <strong>{game.name}</strong>
-                  <div>
-                    <em>Total Playtime: {Math.round(game.total_playtime / 60)} hrs</em>
-                    <ul>
-                      {members.map(member => (
-                        <li key={member.steam_id} style={{ fontSize: "0.95em" }}>
-                          {member.display_name}: {Math.round((game.playtimes?.[member.steam_id] || 0) / 60)} hrs
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              {members.map(member => (
+                <li key={member.steam_id} className="mygames-list-item" style={{ justifyContent: "flex-start" }}>
+                  {member.avatar_url && (
+                    <img
+                      src={member.avatar_url}
+                      alt={member.display_name}
+                      style={{ width: 32, height: 32, borderRadius: "50%", marginRight: 8 }}
+                    />
+                  )}
+                  <strong>{member.display_name}</strong>
+                  {member.steam_id === ownerSteamId && (
+                    <span style={{ color: "#7fffd4", marginLeft: 8, fontSize: "0.98em" }}>(Owner)</span>
+                  )}
+                  {member.steam_id !== ownerSteamId && (
+                    <button
+                      className="compare-btn"
+                      style={{ marginLeft: "auto", padding: "4px 12px", background: "#ff3b3b", color: "#fff" }}
+                      onClick={() => handleDeleteMember(member.steam_id)}
+                      title="Remove member"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>
+            {delMsg && <div style={{ color: "#ff3b3b", marginTop: 6 }}>{delMsg}</div>}
           </div>
-        )}
-      </div>
+
+          {/* Group Actions */}
+          <div className="mygames-header" style={{ marginBottom: 18 }}>
+            <button onClick={handleSyncGroup} disabled={syncing} className="sync-btn-small">
+              {syncing ? "Syncing..." : "Sync Group Games from Steam"}
+            </button>
+            {syncMsg && <div style={{ color: "#7fffd4", marginTop: 8 }}>{syncMsg}</div>}
+          </div>
+
+          {/* Group Game Comparison */}
+          <div className="mygames-header" style={{ marginBottom: 0 }}>
+            <button onClick={handleCompareGroupGames} disabled={comparisonLoading} className="compare-btn">
+              {comparisonLoading ? "Comparing..." : "Compare Group Games"}
+            </button>
+            {comparisonError && <div style={{ color: "red", marginTop: 10 }}>{comparisonError}</div>}
+            {comparisonGames.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <h4>Common Games</h4>
+                <div className="group-games-grid">
+                  {comparisonGames.map(game => (
+                    <div key={game.appid} className="group-game-card">
+                      <div className="group-game-header">
+                        <img src={game.image_url} alt={game.name} />
+                        <div>
+                          <div className="group-game-title">{game.name}</div>
+                          <div className="group-game-total">
+                            Total: {Math.round(game.total_playtime / 60)} hrs
+                          </div>
+                        </div>
+                      </div>
+                      <ul className="group-game-members">
+                        {members.map(member => (
+                          <li key={member.steam_id}>
+                            <img src={member.avatar_url} alt={member.display_name} />
+                            <span style={{ minWidth: 90 }}>{member.display_name}:</span>
+                            <span style={{ color: "#7fffd4", marginLeft: 8 }}>
+                              {Math.round((game.playtimes?.[member.steam_id] || 0) / 60)} hrs
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

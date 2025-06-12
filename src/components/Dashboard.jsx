@@ -4,6 +4,7 @@ import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/dashboard.css";
 import { apiFetch } from "../utils/api";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"; // npm install recharts
+import SidebarNav from "./SidebarNav";
 
 function PlaytimeGauge({ value, max = 1000, animate = true }) {
   const percent = Math.min(value / max, 1);
@@ -46,6 +47,7 @@ function PlaytimeGauge({ value, max = 1000, animate = true }) {
 }
 
 const Dashboard = () => {
+  
   const steamId = localStorage.getItem("steam_id");
   const displayName = localStorage.getItem("account_display_name") || "Player";
   const avatarUrl = localStorage.getItem("avatar_url") || "/Logo.jpeg";
@@ -294,6 +296,7 @@ const Dashboard = () => {
   const [compareGames, setCompareGames] = useState([]);
   const [compareLoading, setCompareLoading] = useState(false);
   const [compareAttempted, setCompareAttempted] = useState(false);
+  const [compareDropdownOpen, setCompareDropdownOpen] = useState(false);
 
   const handleCompare = () => {
     if (!selectedFriend) return;
@@ -313,25 +316,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-root">
       <LavaLampBackground />
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-profile">
-          <img src={avatarUrl} alt="Avatar" />
-          <div>
-            <div className="dashboard-name">{displayName}</div>
-            <div className="dashboard-steamid">{steamId}</div>
-          </div>
-        </div>
-        <nav>
-          <ul>
-            <li><Link to="/dashboard">Dashboard</Link></li>
-            <li><Link to="/my_games">My Games</Link></li>
-            <li><Link to="/friends">Friends</Link></li>
-            <li><Link to="/groups">Groups</Link></li>
-            <li><Link to={`/friends/${steamId}/games`}>Friend's Games</Link></li>
-            <li><Link to="/games/1/comparison">Game Comparison</Link></li>
-          </ul>
-        </nav>
-      </aside>
+      <SidebarNav />
       <main className="dashboard-main">
         <div className="dashboard-cards dashboard-cards-grid">
           {/* Large My Games Card */}
@@ -504,7 +489,8 @@ const Dashboard = () => {
                       <li
                         key={opt.value}
                         className={groupSort === opt.value ? "active" : ""}
-                        onClick={() => {
+                        onMouseDown={e => {
+                          e.preventDefault();
                           setGroupSort(opt.value);
                           setSortOpen(false);
                         }}
@@ -547,30 +533,41 @@ const Dashboard = () => {
           </div>
 
           {/* Game Comparison Card */}
-          <div className=" sizefix dashboard-card dashboard-card-compare dashboard-card-small ">
+          <div className="sizefix dashboard-card dashboard-card-compare dashboard-card-small">
             <h3>Compare Games</h3>
-            <div>
-              <select
-                value={selectedFriend}
-                onChange={e => setSelectedFriend(e.target.value)}
-                style={{
-                  flex: 1,
-                  marginBottom: 8,
-                  background: "#181c24",
-                  color: "#00ffe7",
-                  border: "1.5px solid #00ffe7",
-                  borderRadius: 8,
-                  padding: "6px 12px",
-                  fontSize: "1rem"
-                }}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                className="custom-dropdown"
+                tabIndex={0}
+                style={{ position: "relative", flex: 1, marginBottom: 8, minWidth: 180 }}
+                onBlur={() => setCompareDropdownOpen(false)}
               >
-                <option value="">Select a friend…</option>
-                {friends.map(f => (
-                  <option key={f.steam_id} value={f.steam_id}>
-                    {f.display_name || f.steam_id}
-                  </option>
-                ))}
-              </select>
+                <button
+                  type="button"
+                  className="custom-dropdown-btn"
+                  onClick={() => setCompareDropdownOpen(o => !o)}
+                >
+                  {friends.find(f => f.steam_id === selectedFriend)?.display_name || "Select a friend…"}
+                  <span style={{ marginLeft: 8, color: "#00ffe7" }}>▼</span>
+                </button>
+                {compareDropdownOpen && (
+                  <ul className="custom-dropdown-list">
+                    {friends.map(f => (
+                      <li
+                        key={f.steam_id}
+                        className={selectedFriend === f.steam_id ? "active" : ""}
+                        onMouseDown={e => {
+                          e.preventDefault();
+                          setSelectedFriend(f.steam_id);
+                          setCompareDropdownOpen(false);
+                        }}
+                      >
+                        {f.display_name || f.steam_id}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <button
                 onClick={handleCompare}
                 disabled={!selectedFriend || compareLoading}
@@ -582,7 +579,7 @@ const Dashboard = () => {
             {compareGames.length > 0 && (
               <div style={{
                 flex: 1,
-                minHeight: 0, // allows flex children to shrink
+                minHeight: 0,
                 overflowY: "auto",
                 marginTop: 12,
                 marginBottom: 8,
@@ -618,7 +615,7 @@ const Dashboard = () => {
                 )}
               </div>
             )}
-             {compareAttempted && compareGames.length === 0 && selectedFriend && !compareLoading && (
+            {compareAttempted && compareGames.length === 0 && selectedFriend && !compareLoading && (
               <div style={{ color: "#888", marginTop: 12 }}>No games in common.</div>
             )}
             <p style={{ marginTop: 10, color: "#aaa" }}>

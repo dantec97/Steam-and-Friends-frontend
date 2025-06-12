@@ -10,6 +10,10 @@ const SidebarNav = () => {
 
   return (
     <aside className="dashboard-sidebar">
+      <div className="dashboard-logo-title">
+        <img src="/Logo.jpeg" alt="Steam and Friends" className="dashboard-logo-img" />
+        <span className="dashboard-logo-text">Steam and Friends</span>
+      </div>
       <div className="dashboard-profile">
         <img src={avatarUrl} alt="Avatar" />
         <div>
@@ -32,7 +36,7 @@ const SidebarNav = () => {
             <Link to="/groups">Groups</Link>
           </li>
           <li className={location.pathname.startsWith("/friends/") && location.pathname.endsWith("/games") ? "active" : ""}>
-            <Link to={`/friends/${steamId}/games`}>Friend's Games</Link>
+            <Link to="/friends/games">Friend's Games</Link>
           </li>
           <li className={location.pathname === "/games/1/comparison" ? "active" : ""}>
             <Link to="/games/1/comparison">Game Comparison</Link>

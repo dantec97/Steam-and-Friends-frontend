@@ -3,7 +3,18 @@
   background: #181c24;
   color: #e0e6f0;
   font-family: 'Satoshi', 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-  padding: 48px 0 0 0;
+  padding: 48px 0 0 0; /* or match your dashboard-main padding */
+}
+
+.dashboard-main {
+  flex: 1;
+  position: relative;
+  z-index: 1; /* Above the background */
+  min-height: 100vh;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .page-card {
@@ -12,12 +23,13 @@
   box-shadow: 0 0 32px #00ffe733;
   padding: 32px 36px 36px 36px;
   margin: 32px auto;
-  max-width: 1000px;
-  width: 95vw;
+  max-width: 1500px; /* or 1100px, 1200px, etc */
+  /* width: 95vw; */
   transition: box-shadow 0.2s, border 0.2s;
   position: relative;
   display: flex;
   flex-direction: column;
+  min-height: 60vh;
 }
 
 .page-card:hover {
@@ -237,4 +249,191 @@ li span {
   border: 2px solid #00ffe7;
   box-shadow: 0 0 12px #00ffe7aa;
   margin-bottom: 2px;
+}
+
+
+/* ********* GROUP DETAILS STYLES *********  */
+
+/* --- GroupDetails custom styles --- */
+.group-games-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  justify-content: flex-start;
+  align-items: flex-start; /* Prevent vertical stretching */
+}
+
+.group-game-card {
+  background: #23283a;
+  border: 2px solid #00ffe7;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #00ffe744;
+  padding: 14px 18px 10px 18px;
+  min-width: 270px;
+  max-width: 340px;
+  width: 100%; /* Ensures consistent width */
+  flex: 0 1 320px; /* Don't stretch to fill row */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.group-game-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.group-game-header img {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  margin-right: 12px;
+  border: 2px solid #00ffe7;
+  background: #181c24;
+  box-shadow: 0 0 8px #00ffe744;
+}
+
+.group-game-title {
+  font-size: 1.08em;
+  font-weight: 600;
+  color: #00ffe7;
+}
+
+.group-game-total {
+  color: #7fffd4;
+  font-size: 0.98em;
+  margin-top: 2px;
+}
+
+.group-game-members {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.group-game-members li {
+  background: none;
+  box-shadow: none;
+  padding: 2px 0;
+  color: #e0e6f0;
+  display: flex;
+  align-items: center;
+  font-size: 0.97em;
+  margin-bottom: 2px;
+  border-radius: 0;
+}
+
+.group-game-members img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  margin-right: 7px;
+  border: none;
+  box-shadow: none;
+}
+/* 
+.custom-dropdown-btn {
+  background: #181c24;
+  color: #00ffe7;
+  border: 1.5px solid #00ffe7;
+  border-radius: 8px;
+  padding: 6px 28px 6px 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0 8px #00ffe733;
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  text-align: left;
+  position: relative;
+}
+
+.custom-dropdown-list {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 110%;
+  background: #23283a;
+  border: 1.5px solid #00ffe7;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px #00ffe733;
+  z-index: 100;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  animation: dropdownFadeIn 0.18s cubic-bezier(.4,2,.6,1);
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.custom-dropdown-list li {
+  padding: 8px 16px;
+  color: #7fffd4;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  border-radius: 6px;
+}
+
+.custom-dropdown-list li.active,
+.custom-dropdown-list li:hover {
+  background: #00ffe7;
+  color: #181c24;
+} */
+
+
+
+/* *** for my big monitor*** */
+@media (max-width: 1920px) {
+  .page-card, .dashboard-card .dashboard-main {
+    max-width: 78vw;
+    width: 100vw;
+    padding: 8px 2vw;
+    margin: 12px 0;
+  }
+}
+
+/* For medium screens, shrink the max-width and padding */
+/* @media (max-width: 1180px) {
+  .page-card, .dashboard-card .dashboard-main {
+    max-width: 40vw;
+    width: 40vw;
+    padding: 8px 2vw;
+    margin: 12px 0;
+  }
+} */
+
+/* *** for my macbook*** */
+@media (max-width: 1440px) {
+  .page-card, .dashboard-card .dashboard-main {
+    max-width: 72vw;
+    width: 72vw;
+    padding: 8px 2vw;
+    margin: 12px 0;
+  }
+}
+
+/* *** for my savers monitor *** */
+@media (max-width: 1280px) {
+  .page-card, .dashboard-card .dashboard-main {
+    max-width: 63vw;
+    width: 100vw;
+    padding: 8px 2vw;
+    margin: 12px 0;
+  }
+}
+
+/* *** for that inbetween realm *** */
+@media (min-width: 1100px) and (max-width: 1279px) {
+  .page-card, .dashboard-card {
+    max-width: 69vw;
+    width: 85vw;
+    padding: 8px 2vw;
+    margin: 12px 0;
+  }
 }
