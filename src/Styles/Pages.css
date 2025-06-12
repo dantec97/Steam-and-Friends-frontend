@@ -398,15 +398,6 @@ li span {
   }
 }
 
-/* For medium screens, shrink the max-width and padding */
-/* @media (max-width: 1180px) {
-  .page-card, .dashboard-card .dashboard-main {
-    max-width: 40vw;
-    width: 40vw;
-    padding: 8px 2vw;
-    margin: 12px 0;
-  }
-} */
 
 /* *** for my macbook*** */
 @media (max-width: 1440px) {

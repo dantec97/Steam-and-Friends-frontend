@@ -596,3 +596,49 @@ h3{
     margin-top: 16px;
   }
 } */
+
+ /* For big monitors */
+/* @media (max-width: 1920px) {
+  .dashboard-cards,
+  .dashboard-cards-grid {
+    max-width: 78vw;
+    width: 100vw;
+    margin: 0 auto;
+    padding: 8px 2vw;
+    gap: 24px;
+  }
+  .dashboard-card {
+    max-width: 100%;
+  }
+} */
+
+/* For MacBook screens */
+/* @media (max-width: 1440px) {
+  .dashboard-cards,
+  .dashboard-cards-grid {
+    max-width: 72vw;
+    width: 72vw;
+    margin: 0 auto;
+    padding: 8px 2vw;
+    gap: 20px;
+  }
+  .dashboard-card {
+    max-width: 100%;
+  }
+} */
+
+/* For smaller monitors */
+/* @media (max-width: 1280px) {
+  .dashboard-cards,
+  .dashboard-cards-grid {
+    max-width: 63vw;
+    width: 100vw;
+    margin: 0 auto;
+    padding: 8px 2vw;
+    gap: 16px;
+  }
+  .dashboard-card {
+    max-width: 100%;
+  }
+} */
+
