@@ -740,7 +740,7 @@ const Dashboard = () => {
                     // Find the member in the fetched groupMembers array
                     const member = groupMembers.find(m => m.steam_id === steam_id);
                     return (
-                      <div key={steam_id} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
+                      <div className="group-member-PT" key={steam_id} style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
                         <img
                           src={member?.avatar_url || "/Logo.jpeg"}
                           alt={member?.display_name || steam_id}
