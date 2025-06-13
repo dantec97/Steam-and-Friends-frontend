@@ -10,6 +10,7 @@ import GroupDetails from "./components/GroupDetails";
 import SteamAuthSuccess from "./components/SteamAuthSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./components/Dashboard";
+import NotFound from "./components/NotFound";
 
 
 function App() {
@@ -76,6 +77,7 @@ function App() {
           }
         />
         <Route path="/steam-auth-success" element={<SteamAuthSuccess />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
@@ -84,4 +86,3 @@ function App() {
 export default App;
 
 
-// ok im just going to remove the signg up page and keep the log in for new users to use. do we handle when a user is not logged in to redirect them to the login page? i might have disabled some of the security features for development but i would like to re-enable them so i can ensure my app is working properly 
