@@ -589,13 +589,24 @@ h3{
   }
 }
 
-/* @media (max-width: 700px) {
-  .dashboard-main > h3:first-child,
-  .dashboard-main > .dashboard-cards > .dashboard-card:first-child,
-  .dashboard-main > .dashboard-cards-grid > .dashboard-card:first-child {
-    margin-top: 16px;
+
+
+
+
+@media (max-width: 1280px) {
+  .dashboard-cards,
+  .dashboard-cards-grid {
+    max-width: 81vw;
+    width: 100vw;
+    margin-left: -7vw;
+    margin-top: -20vh;
+ 
+    gap: 16px;
+    scale: 80%; /* optional, but will shrink the grid */
   }
-} */
+}
+
+
 
  /* For big monitors */
 /* @media (max-width: 1920px) {

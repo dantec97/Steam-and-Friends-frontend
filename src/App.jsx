@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
-import Signup from "./components/Signup";
 import Login from "./components/Login";
 import MyGames from "./components/MyGames";
 import Friends from "./components/Friends";
@@ -18,7 +17,6 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/my_games"
@@ -85,3 +83,5 @@ function App() {
 
 export default App;
 
+
+// ok im just going to remove the signg up page and keep the log in for new users to use. do we handle when a user is not logged in to redirect them to the login page? i might have disabled some of the security features for development but i would like to re-enable them so i can ensure my app is working properly 
