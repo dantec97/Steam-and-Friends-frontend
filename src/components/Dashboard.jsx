@@ -311,13 +311,13 @@ const Dashboard = () => {
       .catch(() => setCompareLoading(false));
   };
 
-  if (loading) return <div className="dashboard-main">Loading dashboard...</div>;
+  if (loading) return <div className="dashboard-main-2">Loading dashboard...</div>;
 
   return (
     <div className="dashboard-root">
       <LavaLampBackground />
       <SidebarNav />
-      <main className="dashboard-main">
+      <main className="dashboard-main-2">
         <div className="dashboard-center-wrap">
           <div className="dashboard-cards dashboard-cards-grid">
             {/* Large My Games Card */}
