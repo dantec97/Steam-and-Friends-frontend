@@ -708,32 +708,34 @@ const Dashboard = () => {
               ) : (
                 <div style={{ display: "flex", gap: 24 }}>
                   {/* Left: List of top common games */}
-                  <ul style={{ flex: 2, margin: 0, padding: 0 }}>
-                    {groupSharedGames.slice(0, 5).map((game, idx) => (
-                      <li
-                        key={game.appid}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginBottom: 10,
-                          background: idx === selectedGameIdx ? "#23283aee" : "transparent",
-                          borderRadius: 8,
-                          cursor: "pointer",
-                          border: idx === selectedGameIdx ? "2px solid #00ffe7" : "none",
-                          transition: "background 0.2s, border 0.2s"
-                        }}
-                        onClick={() => setSelectedGameIdx(idx)}
-                      >
-                        <img src={game.image_url} alt={game.name} style={{ width: 36, height: 36, borderRadius: 6, marginRight: 12 }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 500 }}>{game.name}</div>
-                          <div style={{ fontSize: 13, color: "#7fffd4" }}>
-                            Total: {Math.round(game.total_playtime / 60)}h
+                  <div style={{ maxHeight: 260, overflowY: "auto", flex: 2, margin: 0, padding: 0 }}>
+                    <ul style={{ margin: 0, padding: 0 }}>
+                      {groupSharedGames.map((game, idx) => (
+                        <li
+                          key={game.appid}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginBottom: 10,
+                            background: idx === selectedGameIdx ? "#23283aee" : "transparent",
+                            borderRadius: 8,
+                            cursor: "pointer",
+                            border: idx === selectedGameIdx ? "2px solid #00ffe7" : "none",
+                            transition: "background 0.2s, border 0.2s"
+                          }}
+                          onClick={() => setSelectedGameIdx(idx)}
+                        >
+                          <img src={game.image_url} alt={game.name} style={{ width: 36, height: 36, borderRadius: 6, marginRight: 12 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 500 }}>{game.name}</div>
+                            <div style={{ fontSize: 13, color: "#7fffd4" }}>
+                              Total: {Math.round(game.total_playtime / 60)}h
+                            </div>
                           </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                   {/* Right: Members and their playtime for the selected game */}
                   <div style={{ flex: 1, minWidth: 120 }}>
                     <div style={{ fontWeight: 500, marginBottom: 8, color: "#00ffe7" }}>Members</div>

@@ -620,6 +620,13 @@ h3{
     margin-right: auto;
     display: block;
   }
+  button:not(.arrow-btn, .hamburger-btn, .custom-dropdown-btn) {
+    width: 90%;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    padding-left: 10px 0;
+  }
 }
 
 @media (max-width: 700px) {
@@ -658,6 +665,10 @@ h3{
     border-radius: 18px;
     box-shadow: 0 0 16px #00ffe733;
     align-self: center;
+  }
+   .group-member-PT{
+    scale: 80%;
+    margin-left: -20px;
   }
 }
 

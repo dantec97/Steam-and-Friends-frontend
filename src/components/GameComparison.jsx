@@ -13,6 +13,8 @@ const GameComparison = () => {
   const [loading, setLoading] = useState(false);
   const [allFriends, setAllFriends] = useState([]);
   const [friendDropdownOpen, setFriendDropdownOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
 
   // Fetch all friends for dropdown
   useEffect(() => {
@@ -38,6 +40,14 @@ const GameComparison = () => {
       .catch(() => setLoading(false));
   }, [selectedFriend, steamId]);
 
+  const filteredFriends = search
+    ? allFriends.filter(f =>
+        (f.display_name || f.steam_id)
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      )
+    : allFriends;
+
   return (
     <div className="dashboard-root">
       <SidebarNav />
@@ -52,28 +62,47 @@ const GameComparison = () => {
               className="custom-dropdown"
               tabIndex={0}
               style={{ position: "relative" }}
-              onBlur={() => setFriendDropdownOpen(false)}
+              onBlur={() => setSearchDropdownOpen(false)}
             >
-              <button
-                type="button"
+              <input
+                type="text"
                 className="custom-dropdown-btn"
-                onClick={() => setFriendDropdownOpen(o => !o)}
-              >
-                {allFriends.find(f => f.steam_id === selectedFriend)?.display_name || "Select a friend…"}
-                <span style={{ marginLeft: 8, color: "#00ffe7" }}>▼</span>
-              </button>
-              {friendDropdownOpen && (
+                style={{ width: "100%" }}
+                placeholder="Search for a friend..."
+                value={search}
+                onChange={e => {
+                  setSearch(e.target.value);
+                  setSearchDropdownOpen(true);
+                }}
+                onFocus={() => setSearchDropdownOpen(true)}
+                autoComplete="off"
+              />
+              {searchDropdownOpen && (
                 <ul className="custom-dropdown-list">
-                  {allFriends.map(f => (
+                  {filteredFriends.length === 0 && (
+                    <li style={{ color: "#888" }}>No friends found</li>
+                  )}
+                  {filteredFriends.map(f => (
                     <li
                       key={f.steam_id}
                       className={selectedFriend === f.steam_id ? "active" : ""}
                       onMouseDown={e => {
                         e.preventDefault();
                         setSelectedFriend(f.steam_id);
-                        setFriendDropdownOpen(false);
+                        setSearchDropdownOpen(false);
+                        setSearch("");
                       }}
                     >
+                      <img
+                        src={f.avatar_url}
+                        alt={f.display_name}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          borderRadius: "50%",
+                          marginRight: 8
+                        }}
+                      />
                       {f.display_name || f.steam_id}
                     </li>
                   ))}
