@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "../Styles/Dashboard.css";
+import LogoutButton from "./LogoutButton";
 
 const SidebarNav = () => {
   const steamId = localStorage.getItem("steam_id");
@@ -71,6 +72,7 @@ const SidebarNav = () => {
             </li>
           </ul>
         </nav>
+        <LogoutButton />
       </aside>
       {/* Overlay for closing menu */}
       {open && <div className="sidebar-overlay" onClick={() => setOpen(false)} />}

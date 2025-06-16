@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./components/Home";
+// import Home from "./components/Home";
 import Login from "./components/Login";
 import MyGames from "./components/MyGames";
 import Friends from "./components/Friends";
@@ -17,7 +17,14 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route
           path="/my_games"
@@ -35,7 +42,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/friends/games" element={<FriendGames />} />
+        <Route
+          path="/friends/games"
+          element={
+            <ProtectedRoute>
+              <FriendGames />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/friends/:friendSteamId/games"
           element={
