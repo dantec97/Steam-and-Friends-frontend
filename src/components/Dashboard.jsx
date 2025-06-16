@@ -344,7 +344,7 @@ const Dashboard = () => {
                 {friends.slice(0, 5).map(friend => (
                   <div key={friend.steam_id} style={{ textAlign: "center" }}>
                     <img
-                      src={friend.avatar_url}
+                      src={friend.avatar_url && friend.avatar_url.trim() !== "" ? friend.avatar_url : "/Logo.jpeg"}
                       alt={friend.display_name}
                       style={{ width: 32, height: 32, borderRadius: "50%" }}
                     />
@@ -511,7 +511,14 @@ const Dashboard = () => {
                       alt={group.name}
                       style={{ width: 24, height: 24, borderRadius: 6, marginRight: 8 }}
                     />
-                    <span>{group.name}</span>
+                    <span>
+                      <Link
+                        to={`/groups/${group.group_id}`}
+                        style={{ color: "#00ffe7", textDecoration: "underline" }}
+                      >
+                        {group.name}
+                      </Link>
+                    </span>
                     <span style={{ marginLeft: "auto", color: "#7fffd4", fontSize: 12 }}>
                       {group.member_count ? `${group.member_count} members` : ""}
                     </span>

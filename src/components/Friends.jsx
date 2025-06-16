@@ -15,13 +15,13 @@ const Friends = () => {
 
   const fetchFriends = () => {
     setLoading(true);
-    apiFetch(`/api/users/${steamId}/friends_cached`)
+    apiFetch(`/api/users/${steamId}/friends`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch friends");
         return res.json();
       })
       .then((data) => {
-        setFriends(data.friends || data);
+        setFriends(data.friends || []);
         setLoading(false);
       })
       .catch((err) => {
@@ -31,33 +31,18 @@ const Friends = () => {
   };
 
   useEffect(() => {
-    if (!steamId) {
-      setError("No Steam ID found. Please log in.");
-      setLoading(false);
-      return;
-    }
     fetchFriends();
   }, [steamId]);
 
   const handleSync = () => {
     setSyncing(true);
-    setSyncMessage("");
-    apiFetch(`/api/users/${steamId}/friends`, { method: "GET" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to sync friends from Steam");
-        return res.json();
-      })
+    apiFetch(`/api/users/${steamId}/sync_friends`, { method: "POST" })
+      .then((res) => res.json())
       .then(() => {
-        setSyncMessage("Friend list synced successfully!");
         fetchFriends();
         setSyncing(false);
-        setTimeout(() => setSyncMessage(""), 2500);
       })
-      .catch(() => {
-        setSyncMessage("Failed to sync friends from Steam.");
-        setSyncing(false);
-        setTimeout(() => setSyncMessage(""), 2500);
-      });
+      .catch(() => setSyncing(false));
   };
 
   if (loading) return <div className="page-root"><div className="page-card">Loading friends...</div></div>;
@@ -77,37 +62,43 @@ const Friends = () => {
             >
               {syncing ? "Syncing..." : "Sync Friends"}
             </button>
-            {syncMessage && (
-              <div style={{ color: syncMessage.includes("success") ? "#00ffe7" : "red", marginTop: 8 }}>
-                {syncMessage}
-              </div>
-            )}
           </div>
-          <ul>
-            {friends.map((friend) => (
-              <li key={friend.steam_id} className="mygames-list-item">
-                <img
-                  src={friend.avatar_url}
-                  alt={friend.display_name || friend.steam_id}
-                  className="avatar"
-                />
-                <div className="mygames-info">
-                  <strong>{friend.display_name || friend.steam_id}</strong>
-                  <span className="mygames-playtime">
-                    {friend.friend_since ? `Friends since ${new Date(friend.friend_since * 1000).toLocaleDateString()}` : ""}
-                  </span>
-                </div>
-                <button
-                  className="compare-btn"
-                  onClick={() => navigate(`/friends/${friend.steam_id}/games`, {
-                    state: { display_name: friend.display_name }
-                  })}
-                >
-                  View Games
-                </button>
-              </li>
-            ))}
-          </ul>
+          {loading ? (
+            <div style={{ margin: "1em 0", color: "#555" }}>Loading friends...</div>
+          ) : error ? (
+            <div style={{ color: "red", margin: "1em 0" }}>
+              {error}
+              <br />
+              <button
+                className="sync-btn-small"
+                onClick={handleSync}
+                disabled={syncing}
+                style={{ marginTop: 12 }}
+              >
+                {syncing ? "Syncing..." : "Try Syncing Friends"}
+              </button>
+            </div>
+          ) : friends.length === 0 ? (
+            <div style={{ margin: "1em 0", color: "#555" }}>
+              No friends found.<br />
+              Click <b>Sync Friends</b> above to fetch your friends from Steam.
+            </div>
+          ) : (
+            <ul>
+              {friends.map((friend) => (
+                <li key={friend.steam_id} className="mygames-list-item">
+                  <img
+                    src={friend.avatar_url && friend.avatar_url.trim() !== "" ? friend.avatar_url : "/Logo.jpeg"}
+                    alt={friend.display_name}
+                    className="avatar"
+                  />
+                  <div className="mygames-info">
+                    <strong>{friend.display_name || friend.steam_id}</strong>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </main>
     </div>

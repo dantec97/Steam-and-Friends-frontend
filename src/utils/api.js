@@ -4,8 +4,7 @@ export function apiFetch(url, options = {}) {
     ...options,
     headers: {
       ...(options.headers || {}),
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 }

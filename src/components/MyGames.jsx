@@ -51,7 +51,6 @@ const MyGames = () => {
   }
 
   if (loading) return <div className="page-root"><div className="page-card">Loading games...</div></div>;
-  if (error) return <div className="page-root"><div className="page-card" style={{ color: "red" }}>{error}</div></div>;
 
   return (
     <div className="dashboard-root">
@@ -68,29 +67,49 @@ const MyGames = () => {
               {syncing ? "Syncing..." : "Sync Games"}
             </button>
           </div>
-          <ul>
-            {games.map((game) => (
-              <li key={game.appid} className="mygames-list-item">
-                <img
-                  src={game.image_url}
-                  alt={game.name}
-                  className="avatar"
-                />
-                <div className="mygames-info">
-                  <strong>{game.name}</strong>
-                  <span className="mygames-playtime">
-                    {formatPlaytime(game.playtime_minutes)} played
-                  </span>
-                </div>
-                <button
-                  className="compare-btn"
-                  onClick={() => navigate(`/games/${game.id}/comparison`)}
-                >
-                  Compare with Friends
-                </button>
-              </li>
-            ))}
-          </ul>
+          {error ? (
+            <div style={{ color: "red", margin: "1em 0" }}>
+              {error}
+              <br />
+              <button
+                className="sync-btn-small"
+                onClick={handleSync}
+                disabled={syncing}
+                style={{ marginTop: 12 }}
+              >
+                {syncing ? "Syncing..." : "Try Syncing Games"}
+              </button>
+            </div>
+          ) : games.length === 0 ? (
+            <div style={{ margin: "1em 0", color: "#555" }}>
+              No games found.<br />
+              Click <b>Sync Games</b> above to fetch your library from Steam.
+            </div>
+          ) : (
+            <ul>
+              {games.map((game) => (
+                <li key={game.appid} className="mygames-list-item">
+                  <img
+                    src={game.image_url && game.image_url.trim() !== "" ? game.image_url : "/Logo.jpeg"}
+                    alt={game.name}
+                    className="avatar"
+                  />
+                  <div className="mygames-info">
+                    <strong>{game.name}</strong>
+                    <span className="mygames-playtime">
+                      {formatPlaytime(game.playtime_minutes)} played
+                    </span>
+                  </div>
+                  <button
+                    className="compare-btn"
+                    onClick={() => navigate(`/games/${game.id}/comparison`)}
+                  >
+                    Compare with Friends
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </main>
     </div>
