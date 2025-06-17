@@ -158,6 +158,9 @@ const FriendGames = () => {
             <>
               <div className="mygames-header">
                 <h2>{friendName}'s Games</h2>
+                <div style={{ fontSize: "0.9em", color: "#7fffd4", marginTop: 4 }}>
+            You only get 10 syncs per day...use them wisely pick your favorite friends first!
+            </div>
                 <button
                   className="sync-btn-small"
                   onClick={handleSync}

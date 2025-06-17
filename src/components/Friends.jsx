@@ -55,6 +55,9 @@ const Friends = () => {
         <div className="page-card">
           <div className="mygames-header">
             <h2>My Friends</h2>
+            <div style={{ fontSize: "0.9em", color: "#7fffd4", marginTop: 4 }}>
+            You only get 10 syncs per day...use them wisely!
+            </div>
             <button
               className="sync-btn-small"
               onClick={handleSync}
