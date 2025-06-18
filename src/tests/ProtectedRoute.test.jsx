@@ -13,6 +13,7 @@ describe("ProtectedRoute", () => {
 
   it("renders children when steam_id is present", () => {
     localStorage.setItem("steam_id", "1234567890");
+    localStorage.setItem("token", "fake-token"); // <-- Add this line
     render(
       <MemoryRouter initialEntries={["/protected"]}>
         <Routes>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
+import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/Pages.css";
 
 const FriendGames = () => {
@@ -100,6 +101,7 @@ const FriendGames = () => {
 
   return (
     <div className="dashboard-root">
+       <LavaLampBackground />
       <SidebarNav />
       <main className="dashboard-main">
         <div className="page-card">

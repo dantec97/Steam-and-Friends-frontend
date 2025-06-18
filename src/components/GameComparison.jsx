@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
 import "../Styles/Pages.css";
+import LavaLampBackground from "./LavaLampBackground";
 
 const GameComparison = () => {
   const { gameId } = useParams();
@@ -50,6 +51,7 @@ const GameComparison = () => {
 
   return (
     <div className="dashboard-root">
+      <LavaLampBackground />
       <SidebarNav />
       <main className="dashboard-main">
         <div className="page-card">

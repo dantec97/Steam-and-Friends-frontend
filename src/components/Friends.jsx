@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // <-- add Link import
 import { apiFetch } from "../utils/api";
 import SidebarNav from "./SidebarNav";
+import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/Pages.css";
 
 const Friends = () => {
@@ -50,6 +51,7 @@ const Friends = () => {
 
   return (
     <div className="dashboard-root">
+      <LavaLampBackground />
       <SidebarNav />
       <main className="dashboard-main">
         <div className="page-card">
@@ -96,7 +98,14 @@ const Friends = () => {
                     className="avatar"
                   />
                   <div className="mygames-info">
-                    <strong>{friend.display_name || friend.steam_id}</strong>
+                    <strong>
+                      <Link
+                        to={`/friends/${friend.steam_id}/games`}
+                        style={{ color: "#7fffd4", textDecoration: "none" }}
+                      >
+                        {friend.display_name || friend.steam_id}
+                      </Link>
+                    </strong>
                   </div>
                 </li>
               ))}

@@ -512,6 +512,7 @@ li span {
     padding: 14px 0;
     box-shadow: 0 0 16px #00ffe733;
   }
+  
 }
 @media (max-width: 700px) {
   .dashboard-card:first-child,

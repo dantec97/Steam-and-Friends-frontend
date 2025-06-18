@@ -11,6 +11,7 @@ import SteamAuthSuccess from "./components/SteamAuthSuccess";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./components/Dashboard";
 import NotFound from "./components/NotFound";
+import FriendsWithGame from "./components/FriendsWithGame";
 
 
 function App() {
@@ -91,6 +92,14 @@ function App() {
           }
         />
         <Route path="/steam-auth-success" element={<SteamAuthSuccess />} />
+        <Route
+          path="/games/:gameId/friends"
+          element={
+            <ProtectedRoute>
+              <FriendsWithGame />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

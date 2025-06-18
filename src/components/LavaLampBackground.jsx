@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import "../Styles/LavaLampBackground.css"; // Ensure you have the correct CSS file
+import "../Styles/LavaLampBackground.css";
 
 const NUM_BLOBS = 4;
 
@@ -8,10 +8,14 @@ const randomColor = () =>
 
 const LavaLampBackground = () => {
   const blobs = useRef([]);
+  const mouseActive = useRef(false);
+  const lastMouseMove = useRef(Date.now());
 
   useEffect(() => {
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
+    let centerX = window.innerWidth / 2;
+    let centerY = window.innerHeight / 2;
     let blobData = Array(NUM_BLOBS)
       .fill(0)
       .map(() => ({
@@ -27,16 +31,29 @@ const LavaLampBackground = () => {
     const handleMouseMove = (e) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
+      mouseActive.current = true;
+      lastMouseMove.current = Date.now();
     };
 
     window.addEventListener("mousemove", handleMouseMove);
 
     let anim;
     function animate() {
+      // If no mouse movement for 2 seconds, return to center
+      const now = Date.now();
+      const followMouse = mouseActive.current && now - lastMouseMove.current < 2000;
+
       blobs.current.forEach((blob, i) => {
-        // Slowly move each blob toward the cursor, with a unique offset for each
-        blob.x += ((mouseX + Math.sin(Date.now() / 2000 + blob.offset) * 120) - blob.x) * 0.01;
-        blob.y += ((mouseY + Math.cos(Date.now() / 1800 + blob.offset) * 120) - blob.y) * 0.01;
+        let targetX, targetY;
+        if (followMouse) {
+          targetX = mouseX + Math.sin(now / 2000 + blob.offset) * 120;
+          targetY = mouseY + Math.cos(now / 1800 + blob.offset) * 120;
+        } else {
+          targetX = centerX + Math.sin(now / 2000 + blob.offset) * 120;
+          targetY = centerY + Math.cos(now / 1800 + blob.offset) * 120;
+        }
+        blob.x += (targetX - blob.x) * 0.01;
+        blob.y += (targetY - blob.y) * 0.01;
         const el = document.getElementById(`lava-blob-${i}`);
         if (el) {
           el.style.left = `${blob.x - blob.size / 2}px`;

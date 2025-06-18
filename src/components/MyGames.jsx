@@ -105,7 +105,14 @@ const MyGames = () => {
                   </div>
                   <button
                     className="compare-btn"
-                    onClick={() => navigate(`/games/${game.id}/comparison`)}
+                    onClick={() =>
+                      navigate(`/games/${game.id}/friends`, {
+                        state: {
+                          myPlaytime: game.playtime_minutes,
+                          gameName: game.name,
+                        },
+                      })
+                    }
                   >
                     Compare with Friends
                   </button>
