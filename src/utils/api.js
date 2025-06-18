@@ -8,3 +8,20 @@ export function apiFetch(url, options = {}) {
     },
   });
 }
+///////////////////////////// BELOW FOR TESTING PURPOSES ONLY
+
+// export async function apiFetch(url, options = {}) {
+//   const token = localStorage.getItem("token");
+//   const response = await fetch(url, {
+//     ...options,
+//     headers: {
+//       ...(options.headers || {}),
+//       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+//     },
+//   });
+//   return response.json();
+// }
+
+
+
+

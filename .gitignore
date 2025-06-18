@@ -25,3 +25,5 @@ dist-ssr
 
 backend_ex.py
 schema_ex.sql
+steam_friends_backup_2025_06_17.dump
+steam_friends_schema_2025_06_17.sql
