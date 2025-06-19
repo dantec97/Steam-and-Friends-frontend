@@ -5,6 +5,8 @@ import SidebarNav from "./SidebarNav";
 import "../Styles/Pages.css";
 import steamLogo from "/steam-logo.png"; // Make sure this path is correct
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000";
+
 const Login = () => {
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +41,7 @@ const Login = () => {
           <button
             className="steam-login-btn"
             onClick={() => {
-              window.location.href = "http://127.0.0.1:5000/auth/steam";
+              window.location.href = `${BACKEND_URL}/auth/steam`;
             }}
           >
             <img src={steamLogo} alt="Steam" className="steam-login-logo" />
