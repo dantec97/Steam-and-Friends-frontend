@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import "../Styles/Dashboard.css";
+import "../Styles/dashboard.css";
 import LogoutButton from "./LogoutButton";
 
 const SidebarNav = () => {
