@@ -52,26 +52,30 @@ const Groups = () => {
       setError("Group name required.");
       return;
     }
-    // Example: handle image upload with FormData
-    const formData = new FormData();
-    formData.append("name", groupName);
-    if (groupPic) formData.append("picture", groupPic);
 
-    apiFetch(`/api/users/${steamId}/groups`, {
+    // Use JSON, not FormData, and POST to /api/groups
+    apiFetch(`/api/groups`, {
       method: "POST",
-      body: formData,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: groupName,
+        owner_steam_id: steamId,
+      }),
     })
       .then((res) => res.json())
-      .then(() => {
-        setShowForm(false);
-        setGroupName("");
-        setGroupPic(null);
-        setGroupPicPreview("");
-        setError("");
-        // Refresh groups
-        return apiFetch(`/api/users/${steamId}/groups`).then((res) => res.json());
+      .then((data) => {
+        if (data.group_id) {
+          setShowForm(false);
+          setGroupName("");
+          setGroupPic(null);
+          setGroupPicPreview("");
+          setError("");
+          // Redirect to the new group page
+          navigate(`/groups/${data.group_id}`);
+        } else {
+          setError(data.error || "Failed to create group.");
+        }
       })
-      .then((data) => setGroups(data.groups || data))
       .catch(() => setError("Failed to create group."));
   };
 

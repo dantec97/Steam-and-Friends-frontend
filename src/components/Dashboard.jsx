@@ -59,6 +59,7 @@ const Dashboard = () => {
   const [groups, setGroups] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [memberSearch, setMemberSearch] = useState("");
 
   // After fetching groups, pick the largest group (or let user pick)
   const [groupSharedGames, setGroupSharedGames] = useState([]);
@@ -311,6 +312,14 @@ const Dashboard = () => {
       .catch(() => setCompareLoading(false));
   };
 
+  const filteredFriends = memberSearch
+    ? friends.filter(f =>
+        (f.display_name || f.steam_id)
+          .toLowerCase()
+          .includes(memberSearch.toLowerCase())
+      )
+    : friends;
+
   if (loading) return <div className="dashboard-main-2">Loading dashboard...</div>;
 
   return (
@@ -341,7 +350,7 @@ const Dashboard = () => {
             <div className="dashboard-card dashboard-card-friends">
               <h3>Friends</h3>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {friends.slice(0, 5).map(friend => (
+                {filteredFriends.slice(0, 5).map(friend => (
                   <div key={friend.steam_id} style={{ textAlign: "center" }}>
                     <img
                       src={friend.avatar_url && friend.avatar_url.trim() !== "" ? friend.avatar_url : "/Logo.jpeg"}
@@ -403,24 +412,91 @@ const Dashboard = () => {
                 )}
               </div>
               {showGroupForm && groupCreateStep === "name" && (
-                <form onSubmit={handleCreateGroup} style={{ marginBottom: 12, marginTop: 8, display: "flex", alignItems: "center" }}>
+                <form
+                  onSubmit={handleCreateGroup}
+                  style={{
+                    marginBottom: 12,
+                    marginTop: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    width: "100%",
+                  }}
+                >
                   <input
                     type="text"
+                    className="group-form-input"
                     placeholder="New Group Name"
                     value={groupName}
                     onChange={e => setGroupName(e.target.value)}
                     required
-                    style={{ marginRight: 8, padding: "4px 8px", borderRadius: 4, border: "1px solid #333" }}
                     autoFocus
+                    style={{
+                      flex: 1,
+                      height: 40,
+                      boxSizing: "border-box",
+                      marginBottom: 0,
+                      marginTop: 0,
+                      background: "#181c24",
+                      color: "#7fffd4",
+                      border: "1.5px solid #00ffe7",
+                      borderRadius: 6,
+                      padding: "8px 12px",
+                      fontSize: "1rem",
+                      outline: "none",
+                      transition: "border 0.2s, box-shadow 0.2s",
+                      maxWidth: 320,
+                    }}
                   />
-                  <button type="submit" style={{ marginRight: 8 }}>Create</button>
+                  <button
+                    type="submit"
+                    style={{
+                      height: 40,
+                      padding: "0 12px",
+                      borderRadius: 6,
+                      background: "#00ffe7",
+                      color: "#181c24",
+                      border: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      cursor: "pointer",
+                      marginRight: 0,
+                    }}
+                  >
+                    Create
+                  </button>
                 </form>
               )}
               {showGroupForm && groupCreateStep === "members" && (
                 <div style={{ marginBottom: 12 }}>
                   <div style={{ marginBottom: 8 }}>Select Members:</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {friends.map(friend => (
+                  <input
+                    type="text"
+                    className="group-form-input"
+                    placeholder="Search friends…"
+                    value={memberSearch}
+                    onChange={e => setMemberSearch(e.target.value)}
+                  />
+                  <div
+                    className="group-member-select-list"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                      maxHeight: "100%",
+                      minHeight: "100%",
+                      overflowY: "auto",
+                      border: "1px solid rgb(38, 58, 35)",
+                      borderRadius: 8,
+                      padding: 8,
+                      background: "#23283a",
+                      width: "95%",
+                      minWidth: 0,
+                      flexShrink: 1,
+                      flexGrow: 0,
+                    }}
+                  >
+                    {filteredFriends.map(friend => (
                       <button
                         key={friend.steam_id}
                         type="button"
@@ -429,8 +505,12 @@ const Dashboard = () => {
                           color: selectedMembers.includes(friend.steam_id) ? "#181c24" : "#7fffd4",
                           border: "1px solid #00ffe7",
                           borderRadius: 6,
-                          padding: "4px 8px",
-                          cursor: "pointer"
+                          padding: "6px 12px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
                         }}
                         onClick={() => {
                           setSelectedMembers(members =>
@@ -440,9 +520,19 @@ const Dashboard = () => {
                           );
                         }}
                       >
-                        {friend.display_name || friend.steam_id}
+                        <img
+                          src={friend.avatar_url && friend.avatar_url.trim() !== "" ? friend.avatar_url : "/Logo.jpeg"}
+                          alt={friend.display_name}
+                          style={{ width: 24, height: 24, borderRadius: "50%" }}
+                        />
+                        <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {friend.display_name || friend.steam_id}
+                        </span>
                       </button>
                     ))}
+                    {filteredFriends.length === 0 && (
+                      <div style={{ color: "#888", textAlign: "center" }}>No friends found.</div>
+                    )}
                   </div>
                   <button
                     style={{ marginTop: 12 }}
@@ -454,21 +544,64 @@ const Dashboard = () => {
                 </div>
               )}
               {showGroupForm && groupCreateStep === "picture" && (
-                <form onSubmit={handleSetGroupPic} style={{ marginBottom: 12, marginTop: 8, display: "flex", alignItems: "center" }}>
+                <form
+                  onSubmit={handleSetGroupPic}
+                  style={{
+                    marginBottom: 12,
+                    marginTop: 8,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: 10,
+                    width: "100%",
+                  }}
+                >
                   <input
                     type="text"
                     placeholder="Group Picture URL"
                     value={groupPicUrl}
                     onChange={e => setGroupPicUrl(e.target.value)}
-                    style={{ marginRight: 8, padding: "4px 8px", borderRadius: 4, border: "1px solid #333" }}
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: 4,
+                      border: "1px solid #333",
+                      width: "100%",
+                      maxWidth: 320,
+                      marginBottom: 0,
+                    }}
                     autoFocus
                   />
-                  <button type="submit" style={{ marginRight: 8 }}>Set Picture</button>
-                  {groupPicMsg && <span style={{ color: "#7fffd4", marginLeft: 8 }}>{groupPicMsg}</span>}
+                  <div style={{ display: "flex", gap: 10 }}>
+                    <button type="submit" style={{ marginRight: 0 }}>Set Picture</button>
+                    <button
+                      type="button"
+                      style={{
+                        background: "none",
+                        color: "#888",
+                        border: "1px solid #333",
+                        borderRadius: 4,
+                        padding: "4px 12px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        setShowGroupForm(false);
+                        setGroupCreateStep("name");
+                        setSelectedMembers([]);
+                        setNewGroupId(null);
+                        setGroupPicUrl("");
+                        setGroupPicMsg("");
+                      }}
+                    >
+                      Skip
+                    </button>
+                  </div>
+                  {groupPicMsg && (
+                    <span style={{ color: "#7fffd4", marginLeft: 2 }}>{groupPicMsg}</span>
+                  )}
                 </form>
               )}
               {groupCreateMsg && <div style={{ color: "#7fffd4", marginBottom: 8 }}>{groupCreateMsg}</div>}
-              <div className="dashboard-group-sort-wrap" style={{ marginBottom: 10 }}>
+              <div className="dashboard-group-sort_wrap" style={{ marginBottom: 10 }}>
                 <label htmlFor="group-sort" style={{ marginRight: 8, color: "#7fffd4" }}>Sort:</label>
                 <div
                   className="custom-dropdown"
@@ -579,7 +712,14 @@ const Dashboard = () => {
                 <button
                   onClick={handleCompare}
                   disabled={!selectedFriend || compareLoading}
-                  style={{ marginLeft: 8 }}
+                  style={{
+                  margin: 8,
+                  width: 90,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                }}
                 >
                   {compareLoading ? "Comparing..." : "Compare"}
                 </button>

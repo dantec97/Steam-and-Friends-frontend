@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
+import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/Pages.css";
 
 const DEFAULT_GROUP_PIC = "/Logo.jpeg";
@@ -187,6 +188,7 @@ const GroupDetails = () => {
 
   return (
     <div className="dashboard-root">
+      <LavaLampBackground />
       <SidebarNav />
       <main className="dashboard-main">
         <div className="page-card">

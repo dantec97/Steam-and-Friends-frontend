@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import "../Styles/Pages.css";
 import SidebarNav from "./SidebarNav";
+import LavaLampBackground from "./LavaLampBackground";
 
 const MyGames = () => {
   const [games, setGames] = useState([]);
@@ -54,6 +55,7 @@ const MyGames = () => {
 
   return (
     <div className="dashboard-root">
+      <LavaLampBackground />
       <SidebarNav />
       <main className="dashboard-main">
         <div className="page-card">

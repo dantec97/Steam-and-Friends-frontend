@@ -455,6 +455,27 @@ h3{
   display: none;
 }
 
+/* Add to src/Styles/dashboard.css or Pages.css */
+/* .group-form-input {
+  background: #181c24;
+  color: #7fffd4;
+  border: 1.5px solid #00ffe7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+}
+
+.group-form-input:focus {
+  border-color: #7fffd4;
+  box-shadow: 0 0 0 2px #00ffe733;
+} */
+
 @media (max-width: 700px) {
   .mobile-top-nav {
     display: flex;
