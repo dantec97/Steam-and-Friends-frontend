@@ -6,7 +6,7 @@ const SteamAuthSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const steamId = params.get("steamid");
+    const steamId = params.get("steam_id");
     const displayName = params.get("display_name");
     const avatarUrl = params.get("avatar_url");
     const token = params.get("token");
