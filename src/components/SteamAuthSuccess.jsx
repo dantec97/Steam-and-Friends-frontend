@@ -10,12 +10,13 @@ const SteamAuthSuccess = () => {
     const displayName = params.get("display_name");
     const avatarUrl = params.get("avatar_url");
     const token = params.get("token");
+    console.log("Params:", steamId, token, displayName, avatarUrl);
     if (steamId && token) {
       localStorage.setItem("steam_id", steamId);
       localStorage.setItem("account_display_name", displayName);
       localStorage.setItem("avatar_url", avatarUrl);
       localStorage.setItem("token", token);
-      navigate("/my_games");
+      navigate("/dashboard");
     } else {
       navigate("/login?error=steam_auth_failed");
     }
