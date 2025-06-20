@@ -1,6 +1,7 @@
 export function apiFetch(url, options = {}) {
   const token = localStorage.getItem("token");
-  return fetch(url, {
+  const baseUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000";
+  return fetch(baseUrl + url, {
     ...options,
     headers: {
       ...(options.headers || {}),
