@@ -102,7 +102,7 @@ Getting started with **Steam and Friends** is easy! Follow these steps to explor
 
 1. **Clone the Repo**
    ```sh
-   git clone <your-repo-url>
+   git clone https://github.com/dantec97/Steam-and-Friends-frontend
    cd front_end/Steam_and_Friends
    ```
 
