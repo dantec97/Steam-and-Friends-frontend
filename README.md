@@ -1,8 +1,55 @@
 # 🎮 Steam and Friends – Frontend
 
-A stylish, interactive React SPA for exploring, comparing, and sharing your Steam library, playtime, and gaming stats with friends and groups.
+**Steam and Friends** is a sleek, interactive React single-page app (SPA) that brings your Steam library to life.  
+It lets you **explore your games**, **compare stats** with friends, and **discover common games** faster than ever — no more endless scrolling or debating what to play!
+
+Create custom groups with your gaming buddies, instantly see shared games and playtime, and plan your next session with ease.  
+Think of it as the social layer Steam *should* have had all along — wrapped in a neon-inspired, mobile-friendly UI that feels at home in any gamer’s setup.
+
+🌟 **Play together, smarter. Game nights just got easier.**
 
 ---
+
+## 🌐 Live Demo
+
+👉 [Check out Steam and Friends live on Render](https://steam-and-friends-frontend.onrender.com/)
+
+---
+
+## 📸 Preview
+
+![Steam and Friends Screenshot](https://raw.githubusercontent.com/dantec97/Steam-and-Friends-frontend/main/public/Dashboard.png)
+
+*Above: Example of the dashboard view with shared games highlighted*
+
+---
+
+## 🕹️ Instructions for Use
+
+Getting started with **Steam and Friends** is easy! Follow these steps to explore, sync, and compare your games with friends:
+
+1️⃣ **Log in with Steam**  
+   - Click the login button and authenticate securely using Steam OpenID.
+
+2️⃣ **Sync your games**  
+   - After logging in, navigate to the **My Games** page.
+   - Click the **Sync Games** button to fetch your library and playtime data.
+
+3️⃣ **Sync your friends**  
+   - Head over to the **Friends** page.
+   - Click **Sync Friends** to pull in your Steam friends and their game data.
+
+4️⃣ **Create a group**  
+   - Go to the **Groups** section.
+   - Create a new group and add friends using the search-and-select tool.
+   - Instantly see common games and shared playtime across your group!
+
+5️⃣ **Explore your games and connections**  
+   - On **My Games**, you can view your library with detailed stats.
+   - For any game, click the **See Friends Who Play** button to find out which friends play that game too.
+
+🌟 That’s it — you’re ready to discover shared games and plan your next gaming session with ease!
+
 
 ## ✨ Features
 
