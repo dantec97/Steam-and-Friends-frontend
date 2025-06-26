@@ -5,6 +5,7 @@ import "../Styles/dashboard.css";
 import { apiFetch } from "../utils/api";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"; // npm install recharts
 import SidebarNav from "./SidebarNav";
+import Loader from "./Loader";
 
 function PlaytimeGauge({ value, max = 1000, animate = true }) {
   const percent = Math.min(value / max, 1);
@@ -320,7 +321,11 @@ const Dashboard = () => {
       )
     : friends;
 
-  if (loading) return <div className="dashboard-main-2">Loading dashboard...</div>;
+  if (loading) return (
+      <div className="center-flex">
+        <Loader message="Loading your dashboard..." />
+      </div>
+    );
 
   return (
     <div className="dashboard-root">

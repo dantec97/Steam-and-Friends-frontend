@@ -1,0 +1,37 @@
+.neon-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.neon-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #00fff7;
+  border-top: 4px solid #222;
+  border-radius: 50%;
+  animation: neon-spin 1s linear infinite;
+  box-shadow: 0 0 16px #00fff7, 0 0 32px #00fff7;
+  margin-bottom: 16px;
+}
+
+@keyframes neon-spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+.neon-loader-text {
+  color: #00fff7;
+  font-size: 1.2em;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px #00fff7, 0 0 16px #00fff7;
+}
+.center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-width: 100vw;
+}

@@ -4,6 +4,7 @@ import { apiFetch } from "../utils/api";
 import "../Styles/Pages.css";
 import SidebarNav from "./SidebarNav";
 import LavaLampBackground from "./LavaLampBackground";
+import Loader from "./Loader";
 
 const MyGames = () => {
   const [games, setGames] = useState([]);
@@ -51,7 +52,11 @@ const MyGames = () => {
     return `${hours}h ${mins}m`;
   }
 
-  if (loading) return <div className="page-root"><div className="page-card">Loading games...</div></div>;
+  if (loading) return (
+      <div className="center-flex">
+        <Loader message="Loading your games..." />
+      </div>
+    );
 
   return (
     <div className="dashboard-root">
@@ -73,17 +78,17 @@ const MyGames = () => {
             </button>
           </div>
           {error ? (
-            <div style={{ color: "red", margin: "1em 0" }}>
+            <div className="page-card-error-center" style={{ color: "red", margin: "1em 0" }}>
               {error}
               <br />
-              <button
+              {/* <button
                 className="sync-btn-small"
                 onClick={handleSync}
                 disabled={syncing}
                 style={{ marginTop: 12 }}
               >
                 {syncing ? "Syncing..." : "Try Syncing Games"}
-              </button>
+              </button> */}
             </div>
           ) : games.length === 0 ? (
             <div style={{ margin: "1em 0", color: "#555" }}>

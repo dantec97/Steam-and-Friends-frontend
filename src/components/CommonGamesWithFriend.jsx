@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api";
+import Loader from "./Loader";
 
 const CommonGamesWithFriend = ({ mySteamId, friendSteamId }) => {
   const [commonGames, setCommonGames] = useState([]);
@@ -14,7 +15,11 @@ const CommonGamesWithFriend = ({ mySteamId, friendSteamId }) => {
       });
   }, [mySteamId, friendSteamId]);
 
-  if (loading) return <div>Loading common games...</div>;
+  if (loading) return (
+        <div className="center-flex">
+          <Loader message="Loading Common Games..." />
+        </div>
+      );
   if (!commonGames.length) return <div>No games in common.</div>;
 
   function formatPlaytime(minutes) {

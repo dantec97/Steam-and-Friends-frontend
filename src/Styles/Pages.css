@@ -520,3 +520,12 @@ li span {
     margin-top: -80px; /* Adjust this value to match your top bar height */
   }
 }
+
+.page-card-error-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px; /* Adjust as needed */
+  width: 100%;
+  text-align: center;
+}

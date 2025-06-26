@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom"; // <-- add Link import
 import { apiFetch } from "../utils/api";
 import SidebarNav from "./SidebarNav";
 import LavaLampBackground from "./LavaLampBackground";
+import Loader from "./Loader";
 import "../Styles/Pages.css";
 
 const Friends = () => {
@@ -46,8 +47,24 @@ const Friends = () => {
       .catch(() => setSyncing(false));
   };
 
-  if (loading) return <div className="page-root"><div className="page-card">Loading friends...</div></div>;
-  if (error) return <div className="page-root"><div className="page-card" style={{ color: "red" }}>{error}</div></div>;
+  if (loading) return (
+        <div className="center-flex">
+          <Loader message="Loading Friends..." />
+        </div>
+      );
+    if (error) return (
+    <div className="dashboard-root">
+      <LavaLampBackground />
+      <SidebarNav />
+      <main className="dashboard-main">
+        <div className="page-card">
+          <div className="page-card-error-center" style={{ color: "red" }}>
+            {error}
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 
   return (
     <div className="dashboard-root">
