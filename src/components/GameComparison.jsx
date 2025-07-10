@@ -4,6 +4,7 @@ import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
 import "../Styles/Pages.css";
 import LavaLampBackground from "./LavaLampBackground";
+import Loader from "./Loader";
 
 const GameComparison = () => {
   const { gameId } = useParams();
@@ -112,7 +113,11 @@ const GameComparison = () => {
               )}
             </div>
           </form>
-          {loading && <div style={{ marginTop: 24 }}>Loading...</div>}
+          {loading && (
+            <div className="center-flex">
+              <Loader message="Loading comparison..." />
+            </div>
+          )}
           {!loading && comparison && (
             <>
               <h3 style={{ textAlign: "center", marginTop: 18 }}>Games You Both Own</h3>

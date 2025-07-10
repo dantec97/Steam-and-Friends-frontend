@@ -4,6 +4,7 @@ import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
 import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/Pages.css";
+import Loader from "./Loader";
 
 const FriendsWithGame = () => {
   const { gameId } = useParams();
@@ -43,7 +44,9 @@ const FriendsWithGame = () => {
         <div className="page-card">
           <h2>Friends Who Play {gameName || "This Game"}</h2>
           {loading ? (
-            <div>Loading...</div>
+            <div className="center-flex">
+              <Loader message="Loading friends with this game..." />
+            </div>
           ) : (
             <>
               <div style={{ marginBottom: 16 }}>

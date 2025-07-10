@@ -86,7 +86,9 @@ const Friends = () => {
             </button>
           </div>
           {loading ? (
-            <div style={{ margin: "1em 0", color: "#555" }}>Loading friends...</div>
+            <div className="center-flex">
+              <Loader message="Loading friends..." />
+            </div>
           ) : error ? (
             <div style={{ color: "red", margin: "1em 0" }}>
               {error}

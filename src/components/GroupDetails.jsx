@@ -4,6 +4,7 @@ import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
 import LavaLampBackground from "./LavaLampBackground";
 import "../Styles/Pages.css";
+import Loader from "./Loader";
 
 const DEFAULT_GROUP_PIC = "/Logo.jpeg";
 
@@ -180,7 +181,11 @@ const GroupDetails = () => {
     setComparisonLoading(false);
   };
 
-  if (loading) return <div className="page-root"><div className="page-card">Loading group members...</div></div>;
+  if (loading) return (
+  <div className="center-flex">
+    <Loader message="Loading group members..." />
+  </div>
+);
 
   // Find the owner's steam_id by matching group.owner_id to a member's user_id or steam_id
   const ownerMember = members.find(m => m.user_id === group.owner_id || m.steam_id === group.owner_steam_id);

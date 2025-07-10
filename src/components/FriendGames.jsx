@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import SidebarNav from "./SidebarNav";
 import { apiFetch } from "../utils/api";
 import LavaLampBackground from "./LavaLampBackground";
+import Loader from "./Loader";
 import "../Styles/Pages.css";
 
 const FriendGames = () => {
@@ -214,7 +215,9 @@ const FriendGames = () => {
                 </div>
               </div>
               {loading ? (
-                <div style={{ marginTop: "1em", color: "#555" }}>Loading games...</div>
+                <div className="center-flex">
+                  <Loader message="Loading games..." />
+                </div>
               ) : error ? (
                 <div style={{ marginTop: "1em", color: "red" }}>{error}</div>
               ) : games.length === 0 ? (
