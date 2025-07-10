@@ -10,11 +10,15 @@ Think of it as the social layer Steam *should* have had all along — wrapped in
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Site
 
 👉 [Check out Steam and Friends live on Render](https://steam-and-friends-frontend.onrender.com/)
 
 ---
+
+## 🎥 Video
+
+https://github.com/user-attachments/assets/6bd4db9b-7744-4eb7-a8e7-a00467c63ead 
 
 ## 📸 Preview
 
