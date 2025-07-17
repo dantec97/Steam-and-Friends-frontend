@@ -18,7 +18,8 @@ Think of it as the social layer Steam *should* have had all along — wrapped in
 
 ## 🎥 Video
 
-https://github.com/user-attachments/assets/6bd4db9b-7744-4eb7-a8e7-a00467c63ead 
+[![Steam and Friends Demo](https://img.youtube.com/vi/unThCalaNos/0.jpg)](https://www.youtube.com/watch?v=unThCalaNos)
+
 
 ## 📸 Preview
 
